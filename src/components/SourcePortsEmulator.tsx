@@ -82,83 +82,85 @@ export default function SourcePortsEmulator() {
   };
 
   const restartGame = () => {
-    if (confirm("আপনি কি সোর্স পোর্ট রিস্টার্ট করতে চান?")) {
+    if (confirm("Do you want to restart the source port?")) {
       setIsPlaying(false);
       setTimeout(() => setIsPlaying(true), 300);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-zinc-900 to-black text-slate-100 flex flex-col font-sans select-none">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans select-none">
       {/* Top Navigation Bar */}
-      <header className="border-b border-zinc-800/80 bg-zinc-950/70 backdrop-blur-md px-6 py-3.5 flex items-center justify-between sticky top-0 z-50">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500 p-0.5 flex items-center justify-center shadow-lg shadow-orange-500/20">
-              <div className="h-full w-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-                <Flame className="h-5 w-5 text-amber-400" />
-              </div>
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-amber-400 via-orange-200 to-rose-400 bg-clip-text text-transparent">
-                  PlaySphere SourcePorts
-                </h1>
-                <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
-                  Native WebAssembly 60+ FPS
-                </span>
-              </div>
-              <p className="text-xs text-zinc-400">Direct C++ Source Port Engine (reVC GTA Vice City)</p>
-            </div>
+      <header className="border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-50">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 p-0.5 flex items-center justify-center shadow-lg shadow-indigo-500/10">
+            <Flame className="h-5 w-5 text-indigo-400" />
           </div>
-
-          {/* Console Switcher Tabs */}
-          <nav className="hidden md:flex items-center gap-1 bg-zinc-900/90 border border-zinc-800 p-1 rounded-xl text-xs ml-4">
-            <Link
-              href="/"
-              className="px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white transition-colors"
-            >
-              হোম
-            </Link>
-            <Link
-              href="/arcade"
-              className="px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white transition-colors"
-            >
-              Arcade & Neo-Geo
-            </Link>
-            <Link
-              href="/ps1"
-              className="px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white transition-colors"
-            >
-              PS1 (60 FPS)
-            </Link>
-            <Link
-              href="/ps2"
-              className="px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white transition-colors"
-            >
-              PS2 (Play!)
-            </Link>
-            <Link
-              href="/sourceports"
-              className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-600 to-orange-600 text-white font-semibold shadow"
-            >
-              reVC (GTA 60+ FPS)
-            </Link>
-          </nav>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                <span>PlaySphere SourcePorts</span>
+              </h1>
+              <span className="hidden sm:inline-flex text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/25 items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse"></span>
+                Native WebAssembly 60+ FPS
+              </span>
+            </div>
+            <p className="text-[11px] sm:text-xs text-zinc-400">Direct C++ Source Port Engine (reVC GTA Vice City)</p>
+          </div>
         </div>
 
+        {/* Console Switcher Tabs - Mobile scrollable */}
+        <nav className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1 sm:pb-0 text-xs">
+          <Link
+            href="/"
+            className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
+          >
+            Home
+          </Link>
+          <Link
+            href="/arcade"
+            className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
+          >
+            Arcade & Neo-Geo
+          </Link>
+          <Link
+            href="/ps1"
+            className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
+          >
+            PS1 (60 FPS)
+          </Link>
+          <Link
+            href="/ps2"
+            className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
+          >
+            PS2 (Play!)
+          </Link>
+          <Link
+            href="/sourceports"
+            className="px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-sm shrink-0"
+          >
+            reVC (GTA 60+ FPS)
+          </Link>
+          <Link
+            href="/admin"
+            className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-indigo-500/30 text-indigo-300 hover:text-indigo-200 hover:bg-indigo-500/10 transition-colors shrink-0"
+          >
+            Admin
+          </Link>
+        </nav>
+
         {/* Header Right Controls */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2">
           {/* FPS Checkmark Toggle */}
-          <label className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all text-xs text-zinc-300 cursor-pointer select-none">
+          <label className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all text-xs text-zinc-300 cursor-pointer select-none">
             <input
               type="checkbox"
               checked={showFps}
               onChange={(e) => toggleShowFps(e.target.checked)}
-              className="h-4 w-4 rounded bg-zinc-950 border-zinc-700 text-amber-500 focus:ring-0 focus:ring-offset-0 cursor-pointer accent-amber-500"
+              className="h-3.5 w-3.5 sm:h-4 sm:w-4 rounded bg-zinc-950 border-zinc-700 text-indigo-600 focus:ring-0 focus:ring-offset-0 cursor-pointer accent-indigo-600"
             />
-            <span className="font-medium">FPS শো করুন</span>
+            <span className="font-medium text-[11px] sm:text-xs">FPS</span>
           </label>
 
           {isPlaying && (
@@ -175,10 +177,10 @@ export default function SourcePortsEmulator() {
               <button
                 onClick={restartGame}
                 className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-zinc-300 hover:text-rose-400 transition-all flex items-center gap-1.5 text-xs font-medium cursor-pointer"
-                title="রিস্টার্ট করুন"
+                title="Restart"
               >
                 <RotateCcw className="h-4 w-4" />
-                <span className="hidden md:inline">রিস্টার্ট</span>
+                <span className="hidden md:inline">Restart</span>
               </button>
             </>
           )}
@@ -186,21 +188,21 @@ export default function SourcePortsEmulator() {
           {/* Controls Settings Button */}
           <button
             onClick={() => setIsSettingsOpen(true)}
-            className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-amber-500/50 text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 text-xs font-medium shadow-sm cursor-pointer"
-            title="কন্ট্রোলার / কিবোর্ড সেটিংস"
+            className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-indigo-500/50 text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 text-xs font-medium shadow-sm cursor-pointer"
+            title="Controller / Keyboard Settings"
           >
-            <SlidersHorizontal className="h-4 w-4 text-amber-400" />
-            <span className="hidden sm:inline">কন্ট্রোল সেটিংস</span>
+            <SlidersHorizontal className="h-4 w-4 text-indigo-400" />
+            <span className="hidden sm:inline">Controls</span>
           </button>
 
           {/* Fullscreen Button */}
           <button
             onClick={toggleFullscreen}
-            className="p-2 rounded-xl bg-gradient-to-r from-zinc-900 to-zinc-800 border border-zinc-700/80 hover:border-zinc-600 text-zinc-200 hover:text-white transition-all flex items-center gap-1.5 text-xs font-medium shadow-sm cursor-pointer"
-            title="ফুলস্ক্রিন টগল"
+            className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-indigo-500/50 text-zinc-200 hover:text-white transition-all flex items-center gap-1.5 text-xs font-medium shadow-sm cursor-pointer"
+            title="Toggle Fullscreen"
           >
-            {isFullscreen ? <Minimize2 className="h-4 w-4 text-amber-400" /> : <Maximize2 className="h-4 w-4 text-amber-400" />}
-            <span className="hidden sm:inline">{isFullscreen ? "সাধারণ স্ক্রিন" : "ফুলস্ক্রিন"}</span>
+            {isFullscreen ? <Minimize2 className="h-4 w-4 text-indigo-400" /> : <Maximize2 className="h-4 w-4 text-indigo-400" />}
+            <span className="hidden sm:inline">{isFullscreen ? "Exit Fullscreen" : "Fullscreen"}</span>
           </button>
         </div>
       </header>
@@ -215,46 +217,44 @@ export default function SourcePortsEmulator() {
           >
             <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center bg-zinc-950">
               {/* Glow effects */}
-              <div className="absolute w-72 h-72 bg-amber-600/10 rounded-full blur-3xl pointer-events-none -top-10 -left-10" />
-              <div className="absolute w-72 h-72 bg-rose-600/10 rounded-full blur-3xl pointer-events-none -bottom-10 -right-10" />
+              <div className="absolute w-72 h-72 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none -top-10 -left-10" />
 
               <div className="relative z-10 flex flex-col items-center max-w-md">
-                <div className="h-16 w-16 mb-4 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-amber-400 shadow-xl">
-                  <Flame className="h-8 w-8 text-amber-400 animate-pulse" />
+                <div className="h-16 w-16 mb-4 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-indigo-400 shadow-xl">
+                  <Flame className="h-8 w-8 text-indigo-400 animate-pulse" />
                 </div>
 
                 <h2 className="text-xl font-bold mb-2 text-white">
                   GTA: Vice City (reVC Source Port)
                 </h2>
                 <p className="text-xs sm:text-sm text-zinc-400 mb-6 leading-relaxed">
-                  এটি কোনো কৃত্রিম এমুলেটর নয়, সরাসরি GTA Vice City-এর রিভার্স ইঞ্জিনিয়ার্ড C++ ইঞ্জিন যা WebAssembly দিয়ে ৬০+ FPS-এ রান করে।
+                  Direct reverse-engineered C++ engine running via WebAssembly and WebGL at native 60+ FPS.
                 </p>
 
+                <div className="flex flex-col gap-3 w-full">
+                  <a
+                    href="https://dos.zone/revcdos/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full py-3.5 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm transition-all shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 cursor-pointer group"
+                  >
+                    <Play className="h-4 w-4 fill-current" />
+                    <span>Play GTA Vice City in New Tab (60+ FPS)</span>
+                    <ExternalLink className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </a>
 
-                  <div className="flex flex-col gap-3 w-full">
-                    <a
-                      href="https://dos.zone/revcdos/"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600 hover:from-amber-500 hover:to-rose-500 text-white font-bold text-sm transition-all shadow-lg shadow-orange-600/30 flex items-center justify-center gap-2 cursor-pointer group"
-                    >
-                      <Play className="h-4 w-4 fill-current" />
-                      <span>GTA Vice City নতুন উইন্ডোতে রান করুন (60+ FPS)</span>
-                      <ExternalLink className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    </a>
-
-                    <button
-                      onClick={() => {
-                        window.open("https://dos.zone/revcdos/", "revc_game", "width=1024,height=768,menubar=no,toolbar=no,location=no,status=no");
-                      }}
-                      className="w-full py-3 px-4 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-xs font-semibold text-zinc-300 hover:text-white transition-all flex items-center justify-center gap-2 cursor-pointer"
-                    >
-                      <Maximize2 className="h-4 w-4 text-amber-400" />
-                      ক্লিন অ্যাপ উইন্ডো (Dedicated Gaming Window) মোডে ওপেন করুন
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => {
+                      window.open("https://dos.zone/revcdos/", "revc_game", "width=1024,height=768,menubar=no,toolbar=no,location=no,status=no");
+                    }}
+                    className="w-full py-3 px-4 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-xs font-semibold text-zinc-300 hover:text-white transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <Maximize2 className="h-4 w-4 text-indigo-400" />
+                    Open in Clean Dedicated Gaming Window
+                  </button>
                 </div>
               </div>
+            </div>
 
             {/* In-Game Always-On-Top FPS Display */}
             {isPlaying && showFps && (
@@ -271,7 +271,7 @@ export default function SourcePortsEmulator() {
             <div className="flex items-center gap-2.5">
               <span className={`h-2.5 w-2.5 rounded-full ${isPlaying ? "bg-emerald-400 animate-pulse" : "bg-amber-400"}`}></span>
               <span className="font-mono">
-                {isPlaying ? "GTA Vice City reVC Engine সক্রিয় (Full 60 FPS)" : "গেম শুরু করতে 'সরাসরি গেম চালু করুন' বাটনে চাপুন"}
+                {isPlaying ? "GTA Vice City reVC Engine Active (Full 60 FPS)" : "Click 'Play GTA Vice City' above to launch"}
               </span>
             </div>
 
@@ -280,7 +280,7 @@ export default function SourcePortsEmulator() {
                 onClick={toggleFullscreen}
                 className="text-xs font-semibold text-zinc-300 hover:text-white transition-colors flex items-center gap-1 cursor-pointer"
               >
-                <Maximize2 className="h-3 w-3 text-amber-400" />
+                <Maximize2 className="h-3 w-3 text-indigo-400" />
                 Fullscreen
               </button>
             )}
@@ -294,34 +294,34 @@ export default function SourcePortsEmulator() {
               onClick={() => setActiveTab("info")}
               className={`flex-1 py-2 rounded-lg font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 activeTab === "info"
-                  ? "bg-amber-600 text-white shadow"
+                  ? "bg-indigo-600 text-white shadow"
                   : "text-zinc-400 hover:text-zinc-200"
               }`}
             >
               <Info className="h-3.5 w-3.5" />
-              কেন ৬০ FPS?
+              Why 60 FPS?
             </button>
             <button
               onClick={() => setActiveTab("controls")}
               className={`flex-1 py-2 rounded-lg font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 activeTab === "controls"
-                  ? "bg-amber-600 text-white shadow"
+                  ? "bg-indigo-600 text-white shadow"
                   : "text-zinc-400 hover:text-zinc-200"
               }`}
             >
               <Keyboard className="h-3.5 w-3.5" />
-              কন্ট্রোলস
+              Controls
             </button>
             <button
               onClick={() => setActiveTab("compatibility")}
               className={`flex-1 py-2 rounded-lg font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 activeTab === "compatibility"
-                  ? "bg-amber-600 text-white shadow"
+                  ? "bg-indigo-600 text-white shadow"
                   : "text-zinc-400 hover:text-zinc-200"
               }`}
             >
               <Cpu className="h-3.5 w-3.5" />
-              প্রযুক্তি
+              Technology
             </button>
           </div>
 
@@ -330,16 +330,16 @@ export default function SourcePortsEmulator() {
             <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-5 flex flex-col gap-4 text-xs">
               <h3 className="font-semibold text-sm text-white flex items-center gap-2">
                 <ShieldCheck className="h-4 w-4 text-emerald-400" />
-                সোর্স পোর্ট বনাম এমুলেটরের পার্থক্য
+                Source Port vs Emulator Difference
               </h3>
               <ul className="space-y-3 text-zinc-300 leading-relaxed">
                 <li className="p-3 rounded-xl bg-zinc-800/50 border border-zinc-700/50">
-                  <strong className="text-amber-400 block mb-1">১. কোনো হার্ডওয়্যার এমুলেশন নেই:</strong>
-                  PS2-তে পুরো কনসোলের প্রতিটি চিপ সফটওয়্যার লুপে রূপান্তর করতে হয় (যার কারণে ১৪ FPS পাচ্ছিলেন)। কিন্তু reVC-তে গেমের কোড সরাসরি পিসি গেমের মতো চলে।
+                  <strong className="text-indigo-400 block mb-1">1. No Hardware Emulation Overhead:</strong>
+                  Unlike PS2 emulation which translates Emotion Engine CPU cycles through interpreter loops, reVC is natively compiled C++ code executing directly in browser WebAssembly.
                 </li>
                 <li className="p-3 rounded-xl bg-zinc-800/50 border border-zinc-700/50">
-                  <strong className="text-emerald-400 block mb-1">২. M1 ম্যাকবুক এয়ারের ১০০% পাওয়ার:</strong>
-                  WebAssembly সরাসরি M1-এর GPU দিয়ে WebGL রেন্ডারিং করে, ফলে ভাইস সিটির মতো ভারী 3D ওপেন-ওয়ার্ল্ড গেমও ৬০+ FPS-এ মাখনের মতো মসৃণ চলে।
+                  <strong className="text-emerald-400 block mb-1">2. 100% GPU Hardware Acceleration:</strong>
+                  WebAssembly delegates rendering directly to your GPU via WebGL, allowing smooth 60+ FPS gameplay with high draw distances.
                 </li>
               </ul>
             </div>
@@ -348,27 +348,27 @@ export default function SourcePortsEmulator() {
           {/* Tab 2: Controls */}
           {activeTab === "controls" && (
             <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-5 flex flex-col gap-3 text-xs font-mono">
-              <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">GTA ভাইস সিটি পিসি কন্ট্রোলস</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">GTA Vice City PC Controls</span>
               <div className="space-y-2 pt-2">
                 <div className="flex justify-between py-1 border-b border-zinc-800/60">
-                  <span className="text-zinc-400">মুভমেন্ট (হাঁটা / ড্রাইভ)</span>
-                  <span className="text-amber-400 font-bold">W, A, S, D</span>
+                  <span className="text-zinc-400">Movement (Walk / Drive)</span>
+                  <span className="text-indigo-400 font-bold">W, A, S, D</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-zinc-800/60">
-                  <span className="text-zinc-400">গাড়িতে ওঠা / নামা</span>
-                  <span className="text-cyan-400 font-bold">F অথবা Enter</span>
+                  <span className="text-zinc-400">Enter / Exit Vehicle</span>
+                  <span className="text-indigo-300 font-bold">F or Enter</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-zinc-800/60">
-                  <span className="text-zinc-400">গুলি / আক্রমণ</span>
+                  <span className="text-zinc-400">Attack / Shoot</span>
                   <span className="text-rose-400 font-bold">Left Click / Ctrl</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-zinc-800/60">
-                  <span className="text-zinc-400">হ্যান্ডব্রেক / জাম্প</span>
+                  <span className="text-zinc-400">Handbrake / Jump</span>
                   <span className="text-emerald-400 font-bold">Spacebar</span>
                 </div>
                 <div className="flex justify-between py-1">
-                  <span className="text-zinc-400">কন্ট্রোলার সাপোর্ট</span>
-                  <span className="text-purple-400 font-bold">Xbox / PS4 অটো ডিটেক্ট</span>
+                  <span className="text-zinc-400">Controller Support</span>
+                  <span className="text-purple-400 font-bold">Xbox / PS4 Auto-Detect</span>
                 </div>
               </div>
             </div>
@@ -379,7 +379,7 @@ export default function SourcePortsEmulator() {
             <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-5 flex flex-col gap-3 text-xs text-zinc-300">
               <h3 className="font-semibold text-sm text-white">reVC (Reverse-Engineered Vice City)</h3>
               <p className="leading-relaxed">
-                এটি ওপেন-সোর্স কমিউনিটি দ্বারা তৈরি একটি রি-ইমপ্লিমেন্টেশন প্রজেক্ট। এতে оригинальный গেমের কোনো কপিরাইটেড বাইনারি কোড অনুকরণ করতে হয় না; আধুনিক C++ এবং SDL2 ব্যবহার করে গেমটিকে সরাসরি যেকোনো ওএস ও ব্রাউজারে বিল্ড করা যায়।
+                reVC is an open-source clean room re-implementation of the GTA Vice City engine using modern C++ and SDL2. By compiling directly with Emscripten into WebAssembly, it delivers authentic PC game performance in any modern web browser.
               </p>
             </div>
           )}

@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { 
-  Gamepad2, 
   Maximize2, 
   Minimize2, 
   Play, 
@@ -16,16 +16,29 @@ import {
   Sparkles,
   Zap,
   Sword,
-  ExternalLink,
-  Flame
+  Download,
+  CheckCircle2,
+  HardDrive,
+  Trash2,
+  AlertCircle,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import ControlsSettingsModal from "@/components/ControlsSettingsModal";
 import { getInputManager } from "@/lib/InputManager";
+import { 
+  isRomCached, 
+  getRomBlob, 
+  saveRomBlob, 
+  deleteRomBlob, 
+  getAllCachedRomIds 
+} from "@/lib/ArcadeRomStorage";
 
 declare global {
   interface Window {
     EJS_player?: string;
     EJS_core?: string;
+    EJS_gameName?: string;
     EJS_gameUrl?: string;
     EJS_startOnLoaded?: boolean;
     EJS_pathtodata?: string;
@@ -35,60 +48,109 @@ declare global {
   }
 }
 
-interface RetroGamePreset {
+export interface RetroGamePreset {
   id: string;
+  slug?: string;
   title: string;
-  category: "CPS-1.5" | "Neo Geo";
+  shortTitle: string;
+  category: "CPS-1.5" | "Neo Geo" | "Arcade" | string;
+  sizeText: string;
   desc: string;
   romUrl: string;
-  core: "arcade" | "fbalpha2012_cps1" | "fbalpha2012_cps2" | "neogeo";
   directLink?: string;
+  imageUrl?: string;
 }
 
-const PRESET_GAMES: RetroGamePreset[] = [
+export const ARCADE_GAMES: RetroGamePreset[] = [
   {
     id: "dino",
-    title: "Cadillacs and Dinosaurs (Mustapha)",
+    slug: "cadillacs-and-dinosaurs",
+    title: "Cadillacs and Dinosaurs",
+    shortTitle: "Mustapha / Dino",
     category: "CPS-1.5",
-    desc: "ক্যাপকমের কালজয়ী বিট'এম আপ আর্কেড ক্লাসিক। মুস্তাফা ও হান্নার অ্যাডভেঞ্চার!",
-    romUrl: "https://archive.org/download/mame-0.225-roms-merged/dino.zip",
-    core: "arcade",
-    directLink: "https://www.retrogames.cc/arcade-games/cadillacs-dinosaurs-930201-etc.html"
+    sizeText: "13.2 MB",
+    desc: "Capcom 1993 side-scrolling beat 'em up legend featuring Jack, Hannah, Mustapha & Mess.",
+    romUrl: "https://filesus3.retrogames.cc/rom/19/new/dino.zip",
+    directLink: "https://www.retrogames.cc/arcade-games/cadillacs-dinosaurs-930201-etc.html",
+    imageUrl: "https://images.igdb.com/igdb/image/upload/t_cover_big/co205v.png",
   },
   {
     id: "kof98",
-    title: "The King of Fighters '98 (KOF)",
+    slug: "the-king-of-fighters-98",
+    title: "The King of Fighters '98",
+    shortTitle: "KOF '98 Dream Match",
     category: "Neo Geo",
-    desc: "নিও জিও এসএনকে-এর সর্বকালের সেরা ফাইটিং গেম 'The Slugfest'।",
-    romUrl: "https://archive.org/download/neogeo_romcollection/kof98.zip",
-    core: "arcade",
-    directLink: "https://www.retrogames.cc/arcade-games/the-king-of-fighters-98-the-slugfest-kof-98-dream-match-never-ends.html"
+    sizeText: "40.4 MB",
+    desc: "SNK's crowning fighting achievement with 38 fighters, Advanced and Extra battle modes.",
+    romUrl: "https://filesus3.retrogames.cc/rom/19/new/kof98.zip",
+    directLink: "https://www.retrogames.cc/arcade-games/the-king-of-fighters-98-the-slugfest-kof-98-dream-match-never-ends.html",
+    imageUrl: "https://images.igdb.com/igdb/image/upload/t_cover_big/co20h3.png",
   },
   {
     id: "kof2002",
+    slug: "the-king-of-fighters-2002",
     title: "The King of Fighters 2002",
+    shortTitle: "KOF 2002 Challenge to Ultimate",
     category: "Neo Geo",
-    desc: "চ্যালেঞ্জ টু আলটিমেট ব্যাটল - সুপার ফাস্ট কম্বো ও আইকনিক ক্যারেক্টারস।",
-    romUrl: "https://archive.org/download/neogeo_romcollection/kof2002.zip",
-    core: "arcade",
-    directLink: "https://www.retrogames.cc/arcade-games/the-king-of-fighters-2002-magic-plus-ii-bootleg.html"
+    sizeText: "80.5 MB",
+    desc: "High-speed 3v3 team battles with MAX Activation cancels and iconic roster.",
+    romUrl: "https://filesus3.retrogames.cc/rom/19/new/kof2002.zip",
+    directLink: "https://www.retrogames.cc/arcade-games/the-king-of-fighters-2002-magic-plus-ii-bootleg.html",
+    imageUrl: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1x9a.png",
+  },
+  {
+    id: "punisher",
+    slug: "the-punisher",
+    title: "The Punisher",
+    shortTitle: "The Punisher & Nick Fury",
+    category: "CPS-1.5",
+    sizeText: "9.8 MB",
+    desc: "Vigilante justice beat 'em up by Capcom. Control Frank Castle or Nick Fury.",
+    romUrl: "https://filesus3.retrogames.cc/rom/19/new/punisher.zip",
+    directLink: "https://www.retrogames.cc/arcade-games/the-punisher-930422-etc.html",
+    imageUrl: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1x3t.png",
   },
   {
     id: "mslug3",
-    title: "Metal Slug 3 (Neo Geo MVS)",
+    slug: "metal-slug-3",
+    title: "Metal Slug 3",
+    shortTitle: "Metal Slug 3",
     category: "Neo Geo",
-    desc: "সবার প্রিয় অ্যাকশন ও রান-অ্যান্ড-গান আর্কেড শুটার।",
-    romUrl: "https://archive.org/download/neogeo_romcollection/mslug3.zip",
-    core: "arcade",
-    directLink: "https://www.retrogames.cc/arcade-games/metal-slug-3-ngm-2560.html"
+    sizeText: "78.9 MB",
+    desc: "Peak run-and-gun arcade action with branching paths, legendary vehicles, and alien invasions.",
+    romUrl: "https://filesus3.retrogames.cc/rom/19/new/mslug3.zip",
+    directLink: "https://www.retrogames.cc/arcade-games/metal-slug-3-ngm-2560.html",
+    imageUrl: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1x8u.png",
+  },
+  {
+    id: "wof",
+    slug: "warriors-of-fate",
+    title: "Warriors of Fate (Tenchi wo Kurau II)",
+    shortTitle: "Warriors of Fate",
+    category: "CPS-1.5",
+    sizeText: "4.5 MB",
+    desc: "Capcom's famous ancient battlefield beat'em up built on the same CPS engine as Mustapha.",
+    romUrl: "https://archive.org/download/mame-0.225-roms-merged/wof.zip",
+    directLink: "https://www.retrogames.cc/arcade-games/warriors-of-fate-921002-etc.html"
   }
 ];
 
-export default function ArcadeEmulator() {
-  const [selectedPreset, setSelectedPreset] = useState<RetroGamePreset>(PRESET_GAMES[0]);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [statusText, setStatusText] = useState<string>("গেমটি চালু করতে 'গেম চালু করুন' বাটনে ক্লিক করুন অথবা লোকাল .ZIP ফাইল দিন");
+interface ArcadeEmulatorProps {
+  activeSlug?: string;
+}
+
+export default function ArcadeEmulator({ activeSlug }: ArcadeEmulatorProps = {}) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentPage = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
+  const ITEMS_PER_PAGE = 24;
+
+  const [gamesList, setGamesList] = useState<RetroGamePreset[]>(ARCADE_GAMES);
+  const [selectedGame, setSelectedGame] = useState<RetroGamePreset>(ARCADE_GAMES[0]);
+  const [cachedIds, setCachedIds] = useState<string[]>([]);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState<number>(0);
+  const [statusText, setStatusText] = useState<string>("Select any game to play instantly.");
   const [fps, setFps] = useState<number>(60);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
@@ -101,19 +163,59 @@ export default function ArcadeEmulator() {
   });
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [inputConfig, setInputConfig] = useState(() => getInputManager().getConfig());
-  const [activeTab, setActiveTab] = useState<"controls" | "how" | "neogeo">("controls");
-  const [isDragOver, setIsDragOver] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<"controls" | "storage" | "how">("controls");
+  const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
+  const [pendingGameToDownload, setPendingGameToDownload] = useState<RetroGamePreset | null>(null);
+
+  // Link Importer state
+  const [showImportModal, setShowImportModal] = useState<boolean>(false);
+  const [importUrlInput, setImportUrlInput] = useState<string>("");
+  const [importTitleInput, setImportTitleInput] = useState<string>("");
+  const [importSlugInput, setImportSlugInput] = useState<string>("");
+  const [isImporting, setIsImporting] = useState<boolean>(false);
+  const [importError, setImportError] = useState<string>("");
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const toggleShowFps = (val: boolean) => {
-    setShowFps(val);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("playsphere_show_fps", String(val));
-    }
-  };
+  // Load cached ROM list from IndexedDB and fetch custom games from API
+  const refreshCachedList = useCallback(async () => {
+    const list = await getAllCachedRomIds();
+    setCachedIds(list);
+  }, []);
 
+  const loadServerGames = useCallback(async () => {
+    try {
+      const res = await fetch("/api/import-rom?category=arcade");
+      const data = await res.json();
+      let combined = ARCADE_GAMES;
+      if (data.games && Array.isArray(data.games) && data.games.length > 0) {
+        const customGames: RetroGamePreset[] = data.games;
+        const customIds = new Set(customGames.map((g) => g.id));
+        const filteredDefault = ARCADE_GAMES.filter((g) => !customIds.has(g.id));
+        combined = [...customGames, ...filteredDefault];
+      }
+      setGamesList(combined);
+
+      // If activeSlug is provided, find and auto-select/boot the game
+      if (activeSlug) {
+        const matched = combined.find((g) => g.slug === activeSlug || g.id === activeSlug);
+        if (matched) {
+          setSelectedGame(matched);
+          handleGameSelectAndPlay(matched);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to load server games:", err);
+    }
+  }, [activeSlug]);
+
+  useEffect(() => {
+    refreshCachedList();
+    loadServerGames();
+  }, [refreshCachedList, loadServerGames]);
+
+  // Fullscreen change listener
   useEffect(() => {
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
@@ -122,6 +224,7 @@ export default function ArcadeEmulator() {
     return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
   }, []);
 
+  // Update FPS counter
   useEffect(() => {
     let timer: any;
     if (isPlaying) {
@@ -132,57 +235,212 @@ export default function ArcadeEmulator() {
     return () => clearInterval(timer);
   }, [isPlaying]);
 
-  const handleFileSelect = (file: File) => {
-    const validExts = [".zip", ".7z", ".rom"];
-    const ext = file.name.substring(file.name.lastIndexOf(".")).toLowerCase();
-    if (!validExts.includes(ext)) {
-      alert("আর্কেড ও নিও-জিও এর জন্য .zip ফাইল সিলেক্ট করুন (যেমন: dino.zip, kof98.zip)");
-      return;
+  const toggleShowFps = (val: boolean) => {
+    setShowFps(val);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("playsphere_show_fps", String(val));
     }
-    setSelectedFile(file);
-    setStatusText(`লোকাল রম প্রস্তুত: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`);
   };
 
-  const bootGame = (romUrlToUse?: string) => {
+  // Launch emulator with a blob or URL
+  const launchEmulatorWithBlob = (blob: Blob, gameTitle: string, gameId?: string) => {
     try {
-      setIsLoading(true);
-      setStatusText(`আর্কেড কোর (FB Alpha / MAME) ও রম লোড হচ্ছে...`);
+      setStatusText("Initializing Arcade Engine (FB Alpha / MAME) & ROM...");
+      const blobUrl = URL.createObjectURL(blob);
 
-      const targetUrl = romUrlToUse || (selectedFile ? URL.createObjectURL(selectedFile) : selectedPreset.romUrl);
+      const resolvedGameName = gameId === "dino" ? "dino" : (gameId || "dino");
 
-      // Set global EmulatorJS configuration for Arcade / Neo Geo
       window.EJS_player = "#arcade-game-container";
-      window.EJS_core = "arcade"; // FinalBurn Alpha / Neo Geo Arcade Core
-      window.EJS_gameUrl = targetUrl;
+      window.EJS_core = "arcade";
+      window.EJS_gameName = resolvedGameName;
+      window.EJS_gameUrl = blobUrl;
       window.EJS_startOnLoaded = true;
       window.EJS_pathtodata = "https://cdn.emulatorjs.org/stable/data/";
 
       window.EJS_onGameStart = () => {
         setIsPlaying(true);
-        setIsLoading(false);
-        setStatusText(`চলছে: ${selectedFile ? selectedFile.name : selectedPreset.title} (ফুল ৬০ FPS)`);
+        setStatusText(`Running: ${gameTitle} (Instant 60 FPS from Memory)`);
       };
 
-      // Load loader script
       const script = document.createElement("script");
       script.src = "https://cdn.emulatorjs.org/stable/data/loader.js";
       script.async = true;
       script.onload = () => {
         setIsPlaying(true);
-        setIsLoading(false);
-        setStatusText(`চলছে: ${selectedFile ? selectedFile.name : selectedPreset.title}`);
+        setStatusText(`Running: ${gameTitle}`);
       };
       script.onerror = () => {
-        setIsLoading(false);
-        setStatusText("অনলাইন আর্কেড ফাইল লোড হতে দেরি হচ্ছে। সরাসরি রেট্রোগেমসে খেলতে নিচের বাটনে ক্লিক করুন।");
+        setStatusText("Failed to load emulator core script. Check internet connection.");
       };
 
       document.body.appendChild(script);
     } catch (err: any) {
       console.error(err);
-      setIsLoading(false);
-      setStatusText("গেম বুট করার সময় সমস্যা হয়েছে: " + err.message);
+      setStatusText("Error: " + err.message);
     }
+  };
+
+  // Download ROM, save into browser IndexedDB, and automatically boot
+  const downloadAndBootGame = async (game: RetroGamePreset) => {
+    setShowConfirmModal(false);
+    setIsDownloading(true);
+    setDownloadProgress(0);
+    setStatusText(`Downloading '${game.title}'... (${game.sizeText})`);
+
+    try {
+      const isExternal = game.romUrl.startsWith("http://") || game.romUrl.startsWith("https://");
+      let response: Response;
+
+      if (isExternal) {
+        // Try direct fetch first (UploadThing / CORS-enabled CDNs work directly)
+        try {
+          response = await fetch(game.romUrl);
+          if (!response.ok) throw new Error("Direct fetch failed");
+        } catch {
+          // Fallback to proxy
+          const proxyUrl = `/api/proxy-rom?url=${encodeURIComponent(game.romUrl)}`;
+          response = await fetch(proxyUrl);
+        }
+      } else {
+        // Local relative URL
+        response = await fetch(game.romUrl);
+      }
+
+      if (!response.ok) {
+        throw new Error(`Failed to download file from server (HTTP ${response.status})`);
+      }
+
+      const contentLength = response.headers.get("content-length");
+      const total = contentLength ? parseInt(contentLength, 10) : 0;
+      let loaded = 0;
+
+      const reader = response.body?.getReader();
+      if (!reader) {
+        const fullBlob = await response.blob();
+        await saveRomBlob(game.id, fullBlob);
+        await refreshCachedList();
+        setIsDownloading(false);
+        setStatusText("Saved to browser memory! Auto-booting game...");
+        launchEmulatorWithBlob(fullBlob, game.title);
+        return;
+      }
+
+      const chunks: Uint8Array[] = [];
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (value) {
+          chunks.push(value);
+          loaded += value.length;
+          if (total > 0) {
+            setDownloadProgress(Math.round((loaded / total) * 100));
+          }
+        }
+      }
+
+      // Combine chunks to Blob
+      const romBlob = new Blob(chunks as any, { type: "application/zip" });
+      
+      // Save permanently in IndexedDB browser memory
+      await saveRomBlob(game.id, romBlob);
+      await refreshCachedList();
+      setIsDownloading(false);
+      setDownloadProgress(100);
+      setStatusText("Saved in memory! Automatically booting now...");
+
+      // Auto start game
+      launchEmulatorWithBlob(romBlob, game.title, game.id);
+    } catch (err: any) {
+      console.error(err);
+      setIsDownloading(false);
+      setStatusText("Remote server offline. Use the online stream option or load a local ROM.");
+    }
+  };
+
+  // When user clicks a game card or Play button
+  const handleGameSelectAndPlay = async (game: RetroGamePreset) => {
+    setSelectedGame(game);
+
+    // Check if already in browser IndexedDB
+    const isSaved = await isRomCached(game.id);
+
+    if (isSaved) {
+      // Load directly from IndexedDB without downloading!
+      setStatusText(`Loading '${game.title}' instantly from memory...`);
+      const cachedBlob = await getRomBlob(game.id);
+      if (cachedBlob) {
+        launchEmulatorWithBlob(cachedBlob, game.title, game.id);
+      } else {
+        // Fallback if missing
+        setPendingGameToDownload(game);
+        setShowConfirmModal(true);
+      }
+    } else {
+      // Prompt user to download once
+      setPendingGameToDownload(game);
+      setShowConfirmModal(true);
+    }
+  };
+
+  // Delete saved ROM from browser storage
+  const handleDeleteCachedRom = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (confirm("Are you sure you want to remove this game from browser memory?")) {
+      await deleteRomBlob(id);
+      await refreshCachedList();
+    }
+  };
+
+  // Import custom link or emulatorjs API link
+  const handleImportRom = async () => {
+    if (!importUrlInput.trim()) {
+      setImportError("Please provide a valid link (e.g. https://www.emulatorjs.com/api/fba?name=dino.zip)");
+      return;
+    }
+
+    setIsImporting(true);
+    setImportError("");
+    setStatusText("Downloading and saving new game to public directory...");
+
+    try {
+      const res = await fetch("/api/import-rom", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          inputUrl: importUrlInput.trim(),
+          customTitle: importTitleInput.trim() || undefined,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Download failed");
+      }
+
+      // Add to gamesList
+      setGamesList((prev) => [data.game, ...prev.filter((g) => g.id !== data.game.id)]);
+      setSelectedGame(data.game);
+      setShowImportModal(false);
+      setImportUrlInput("");
+      setImportTitleInput("");
+      setIsImporting(false);
+      setStatusText(`${data.game.title} successfully added! Click play to start.`);
+    } catch (err: any) {
+      console.error(err);
+      setIsImporting(false);
+      setImportError(err.message || "Failed to download game");
+    }
+  };
+
+  // Local File Upload
+  const handleLocalFileSelect = (file: File) => {
+    const validExts = [".zip", ".7z", ".rom"];
+    const ext = file.name.substring(file.name.lastIndexOf(".")).toLowerCase();
+    if (!validExts.includes(ext)) {
+      alert("Please select a .zip file for Arcade or Neo Geo games (e.g. dino.zip, kof98.zip)");
+      return;
+    }
+    launchEmulatorWithBlob(file, file.name);
   };
 
   const toggleFullscreen = () => {
@@ -197,64 +455,63 @@ export default function ArcadeEmulator() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-zinc-900 to-black text-slate-100 flex flex-col font-sans select-none">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans select-none">
       {/* Header */}
-      <header className="border-b border-zinc-800/80 bg-zinc-950/70 backdrop-blur-md px-6 py-3.5 flex items-center justify-between sticky top-0 z-50">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-red-600 via-orange-600 to-amber-500 p-0.5 flex items-center justify-center shadow-lg shadow-orange-500/20">
-              <div className="h-full w-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-                <Sword className="h-5 w-5 text-orange-400" />
-              </div>
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-red-400 via-orange-300 to-amber-400 bg-clip-text text-transparent">
-                  PlaySphere Arcade & Neo-Geo
-                </h1>
-                <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/20 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse"></span>
-                  CPS-1.5 / Neo Geo MVS (60 FPS)
-                </span>
-              </div>
-              <p className="text-xs text-zinc-400">Cadillacs and Dinosaurs (Mustapha) & King of Fighters</p>
-            </div>
+      <header className="border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-50">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 p-0.5 flex items-center justify-center shadow-lg shadow-indigo-500/10">
+            <Sword className="h-5 w-5 text-indigo-400" />
           </div>
-
-          {/* Console Switcher Navigation */}
-          <nav className="hidden xl:flex items-center gap-1 bg-zinc-900/90 border border-zinc-800 p-1 rounded-xl text-xs ml-4">
-            <Link href="/" className="px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white transition-colors">
-              হোম
-            </Link>
-            <Link href="/arcade" className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-red-600 to-orange-600 text-white font-semibold shadow">
-              Arcade & Neo-Geo
-            </Link>
-            <Link href="/ps1" className="px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white transition-colors">
-              PS1 (60 FPS)
-            </Link>
-            <Link href="/ps2" className="px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white transition-colors">
-              PS2 (Play!)
-            </Link>
-            <Link href="/sourceports" className="px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white transition-colors">
-              reVC (GTA 60+)
-            </Link>
-          </nav>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                <span>PlaySphere Arcade Hub</span>
+              </h1>
+              <span className="hidden sm:inline-flex text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse"></span>
+                IndexedDB Offline Cache (60 FPS)
+              </span>
+            </div>
+            <p className="text-[11px] sm:text-xs text-zinc-400">Cadillacs & Dinosaurs (Mustapha), King of Fighters & Metal Slug</p>
+          </div>
         </div>
 
+        {/* Navigation - Mobile scrollable chip bar */}
+        <nav className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1 sm:pb-0 text-xs">
+          <Link href="/" className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0">
+            Home
+          </Link>
+          <Link href="/arcade" className="px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-sm shrink-0">
+            Arcade & Neo-Geo
+          </Link>
+          <Link href="/ps1" className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0">
+            PS1 (60 FPS)
+          </Link>
+          <Link href="/ps2" className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0">
+            PS2 (Play!)
+          </Link>
+          <Link href="/sourceports" className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0">
+            reVC (GTA 60+)
+          </Link>
+          <Link href="/admin" className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-indigo-500/30 text-indigo-300 hover:text-indigo-200 hover:bg-indigo-500/10 transition-colors shrink-0">
+            Admin
+          </Link>
+        </nav>
+
         {/* Right Controls */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          <label className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all text-xs text-zinc-300 cursor-pointer select-none">
+        <div className="flex items-center gap-2">
+          <label className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all text-xs text-zinc-300 cursor-pointer select-none">
             <input
               type="checkbox"
               checked={showFps}
               onChange={(e) => toggleShowFps(e.target.checked)}
-              className="h-4 w-4 rounded bg-zinc-950 border-zinc-700 text-orange-500 focus:ring-0 cursor-pointer accent-orange-500"
+              className="h-3.5 w-3.5 sm:h-4 sm:w-4 rounded bg-zinc-950 border-zinc-700 text-indigo-600 focus:ring-0 cursor-pointer accent-indigo-600"
             />
-            <span className="font-medium">FPS শো করুন</span>
+            <span className="font-medium text-[11px] sm:text-xs">FPS</span>
           </label>
 
           {isPlaying && showFps && !isFullscreen && (
-            <div className="flex items-center gap-2 bg-zinc-900/90 border border-zinc-800 px-3 py-1.5 rounded-xl text-xs font-mono">
+            <div className="flex items-center gap-1.5 bg-zinc-900/90 border border-zinc-800 px-2.5 py-1.5 rounded-xl text-xs font-mono">
               <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
               <span className="text-zinc-400">FPS:</span>
               <span className="text-emerald-400 font-bold">{fps}</span>
@@ -263,136 +520,132 @@ export default function ArcadeEmulator() {
 
           <button
             onClick={() => setIsSettingsOpen(true)}
-            className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-orange-500/50 text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 text-xs font-medium cursor-pointer"
-            title="কন্ট্রোলার সেটিংস"
+            className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-indigo-500/50 text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 text-xs font-medium cursor-pointer"
+            title="Controller Settings"
           >
-            <SlidersHorizontal className="h-4 w-4 text-orange-400" />
-            <span className="hidden sm:inline">কন্ট্রোল সেটিংস</span>
+            <SlidersHorizontal className="h-4 w-4 text-indigo-400" />
+            <span className="hidden md:inline">Controls</span>
           </button>
 
           <button
             onClick={toggleFullscreen}
-            className="p-2 rounded-xl bg-gradient-to-r from-zinc-900 to-zinc-800 border border-zinc-700/80 hover:border-zinc-600 text-zinc-200 hover:text-white transition-all flex items-center gap-1.5 text-xs font-medium cursor-pointer"
+            className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-indigo-500/50 text-zinc-200 hover:text-white transition-all flex items-center gap-1.5 text-xs font-medium cursor-pointer"
           >
-            {isFullscreen ? <Minimize2 className="h-4 w-4 text-orange-400" /> : <Maximize2 className="h-4 w-4 text-orange-400" />}
-            <span className="hidden sm:inline">{isFullscreen ? "সাধারণ স্ক্রিন" : "ফুলস্ক্রিন"}</span>
+            {isFullscreen ? <Minimize2 className="h-4 w-4 text-indigo-400" /> : <Maximize2 className="h-4 w-4 text-indigo-400" />}
+            <span className="hidden md:inline">{isFullscreen ? "Exit Fullscreen" : "Fullscreen"}</span>
           </button>
         </div>
       </header>
 
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        {/* Left 2 Cols: Game Screen Container */}
-        <div className="lg:col-span-2 flex flex-col gap-3">
-          {/* Preset Selector Bar */}
-          <div className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-2.5 flex items-center justify-between gap-2 overflow-x-auto">
-            <span className="text-xs font-semibold text-zinc-400 px-2 flex items-center gap-1.5">
-              <Sparkles className="h-3.5 w-3.5 text-orange-400" />
-              গেম সিলেক্ট:
-            </span>
-            <div className="flex gap-2">
-              {PRESET_GAMES.map((game) => (
-                <button
-                  key={game.id}
-                  onClick={() => {
-                    setSelectedPreset(game);
-                    setSelectedFile(null);
-                    setStatusText(`নির্বাচিত: ${game.title}`);
-                  }}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
-                    selectedPreset.id === game.id && !selectedFile
-                      ? "bg-gradient-to-r from-orange-600 to-red-600 text-white shadow-md shadow-orange-600/30 font-bold"
-                      : "bg-zinc-950 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-zinc-800"
-                  }`}
-                >
-                  {game.title.split(" (")[0]}
-                </button>
-              ))}
-            </div>
-          </div>
-
+        {/* Left 2 Cols: Game Screen + Game Library Grid */}
+        <div className="lg:col-span-2 flex flex-col gap-4">
+          
+          {/* Main Emulator Display Box */}
           <div
             ref={containerRef}
-            className="relative w-full rounded-2xl bg-black border border-zinc-800/80 shadow-2xl overflow-hidden flex items-center justify-center aspect-[4/3] max-h-[70vh]"
+            className="relative w-full rounded-2xl bg-black border border-zinc-800/80 shadow-2xl overflow-hidden flex items-center justify-center aspect-[4/3] max-h-[62vh]"
           >
-            {/* EmulatorJS Mount Target */}
             <div id="arcade-game-container" className="w-full h-full flex items-center justify-center">
               {!isPlaying && (
-                <div
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    setIsDragOver(true);
-                  }}
-                  onDragLeave={() => setIsDragOver(false)}
-                  onDrop={(e) => {
-                    e.preventDefault();
-                    setIsDragOver(false);
-                    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                      handleFileSelect(e.dataTransfer.files[0]);
-                    }
-                  }}
-                  className={`absolute inset-0 flex flex-col items-center justify-center p-6 text-center transition-colors ${
-                    isDragOver ? "bg-orange-950/40 border-2 border-dashed border-orange-500" : "bg-zinc-950/90"
-                  }`}
-                >
-                  <div className="h-16 w-16 mb-4 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-orange-400 shadow-xl shadow-orange-500/10">
-                    <Sword className="h-8 w-8 text-orange-400 animate-pulse" />
-                  </div>
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-zinc-950/90">
+                  {/* Downloading Progress Bar Overlay */}
+                  {isDownloading ? (
+                    <div className="flex flex-col items-center max-w-sm w-full p-6 rounded-2xl bg-zinc-900/90 border border-zinc-800 shadow-2xl">
+                      <div className="h-12 w-12 mb-3 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 animate-bounce">
+                        <Download className="h-6 w-6" />
+                      </div>
+                      <h3 className="font-bold text-white mb-1">Downloading Game...</h3>
+                      <p className="text-xs text-zinc-400 mb-4">{selectedGame.title} ({selectedGame.sizeText})</p>
 
-                  <h2 className="text-xl font-bold mb-1 text-white">
-                    {selectedFile ? selectedFile.name : selectedPreset.title}
-                  </h2>
-                  <p className="text-xs text-zinc-400 mb-6 max-w-md">
-                    {selectedFile 
-                      ? "আপনার লোকাল আর্কেড / নিও জিও রম ফাইলটি প্রস্তুত।" 
-                      : selectedPreset.desc}
-                  </p>
-
-                  <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
-                    <button
-                      onClick={() => bootGame()}
-                      disabled={isLoading}
-                      className="flex-1 py-3.5 px-6 rounded-xl bg-gradient-to-r from-orange-600 via-red-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold text-sm transition-all shadow-lg shadow-orange-600/30 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-                    >
-                      <Play className="h-4 w-4 fill-current" />
-                      <span>{isLoading ? "কোর লোড হচ্ছে..." : "ব্রাউজারে সরাসরি খেলুন (60 FPS)"}</span>
-                    </button>
-
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept=".zip,.7z,.rom"
-                      onChange={(e) => {
-                        if (e.target.files && e.target.files[0]) {
-                          handleFileSelect(e.target.files[0]);
-                        }
-                      }}
-                      className="hidden"
-                    />
-
-                    <button
-                      onClick={() => fileInputRef.current?.click()}
-                      className="py-3 px-4 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-xs font-semibold text-zinc-300 hover:text-white transition-all flex items-center justify-center gap-2 cursor-pointer"
-                    >
-                      <FolderOpen className="h-4 w-4 text-orange-400" />
-                      <span>লোকাল রম (.zip)</span>
-                    </button>
-                  </div>
-
-                  {/* Direct retrogames.cc Launcher Option */}
-                  {selectedPreset.directLink && (
-                    <div className="mt-4 pt-4 border-t border-zinc-800/80 w-full max-w-md flex flex-col items-center gap-2">
-                      <span className="text-[11px] text-zinc-500">অথবা retrogames.cc-এর মতো ক্লাউড সার্ভার থেকে খেলুন:</span>
-                      <a
-                        href={selectedPreset.directLink}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="w-full py-2.5 px-4 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-700/80 text-xs font-medium text-orange-300 hover:text-orange-200 transition-all flex items-center justify-center gap-2 group"
-                      >
-                        <ExternalLink className="h-3.5 w-3.5 text-orange-400 transition-transform group-hover:translate-x-0.5" />
-                        <span>{selectedPreset.title.split(" (")[0]} retrogames.cc উইন্ডোতে খেলুন</span>
-                      </a>
+                      <div className="w-full bg-zinc-800 h-2.5 rounded-full overflow-hidden mb-2">
+                        <div 
+                          className="bg-indigo-500 h-full transition-all duration-300"
+                          style={{ width: `${downloadProgress}%` }}
+                        />
+                      </div>
+                      <div className="flex justify-between w-full text-[11px] font-mono text-zinc-400">
+                        <span>Saving in Browser Memory</span>
+                        <span className="text-indigo-400 font-bold">{downloadProgress}%</span>
+                      </div>
                     </div>
+                  ) : (
+                    <>
+                      <div className="h-16 w-16 mb-4 rounded-2xl bg-zinc-900 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shadow-xl shadow-indigo-500/10">
+                        <Sword className="h-8 w-8 text-indigo-400" />
+                      </div>
+
+                      <h2 className="text-xl font-bold mb-1 text-white">
+                        {selectedGame.title}
+                      </h2>
+                      <p className="text-xs text-zinc-400 mb-6 max-w-md">
+                        {selectedGame.desc}
+                      </p>
+
+                      <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
+                        <button
+                          onClick={() => handleGameSelectAndPlay(selectedGame)}
+                          className="flex-1 py-3.5 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm transition-all shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 cursor-pointer"
+                        >
+                          {cachedIds.includes(selectedGame.id) ? (
+                            <>
+                              <Play className="h-4 w-4 fill-current" />
+                              <span>Play from Memory (60 FPS)</span>
+                            </>
+                          ) : (
+                            <>
+                              <Download className="h-4 w-4" />
+                              <span>Download & Auto-Start ({selectedGame.sizeText})</span>
+                            </>
+                          )}
+                        </button>
+
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept=".zip,.7z,.rom"
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                              handleLocalFileSelect(e.target.files[0]);
+                            }
+                          }}
+                          className="hidden"
+                        />
+
+                        <button
+                          onClick={() => fileInputRef.current?.click()}
+                          className="py-3 px-4 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-xs font-semibold text-zinc-300 hover:text-white transition-all flex items-center justify-center gap-2 cursor-pointer"
+                          title="Play a local .zip arcade file from your computer"
+                        >
+                          <FolderOpen className="h-4 w-4 text-indigo-400" />
+                          <span>Local ROM</span>
+                        </button>
+                      </div>
+
+                      {cachedIds.includes(selectedGame.id) && (
+                        <div className="mt-3 flex items-center gap-1.5 text-xs text-emerald-400">
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          <span>Saved in Browser Memory (Offline ready)</span>
+                        </div>
+                      )}
+
+                      {/* Instant Play Cloud Stream Button */}
+                      {selectedGame.directLink && (
+                        <div className="mt-4 pt-3 border-t border-zinc-800/80 w-full max-w-md flex flex-col items-center gap-2">
+                          <a
+                            href={selectedGame.directLink}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="w-full py-2.5 px-4 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-700/80 text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition-all flex items-center justify-center gap-2 shadow cursor-pointer group"
+                          >
+                            <Zap className="h-4 w-4 fill-indigo-400 text-indigo-400" />
+                            <span>Play Instant Online Stream (60 FPS)</span>
+                            <span className="text-xs group-hover:translate-x-1 transition-transform">→</span>
+                          </a>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               )}
@@ -408,10 +661,10 @@ export default function ArcadeEmulator() {
             )}
           </div>
 
-          {/* Bottom Status */}
-          <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-xl px-4 py-3 flex items-center justify-between text-xs text-zinc-400">
+          {/* Status Bar */}
+          <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-xl px-4 py-2.5 flex items-center justify-between text-xs text-zinc-400">
             <div className="flex items-center gap-2.5">
-              <span className={`h-2.5 w-2.5 rounded-full ${isPlaying ? "bg-emerald-400 animate-pulse" : "bg-orange-400"}`}></span>
+              <span className={`h-2.5 w-2.5 rounded-full ${isPlaying ? "bg-emerald-400 animate-pulse" : isDownloading ? "bg-indigo-400 animate-pulse" : "bg-indigo-400"}`}></span>
               <span className="font-mono">{statusText}</span>
             </div>
 
@@ -420,135 +673,435 @@ export default function ArcadeEmulator() {
                 onClick={toggleFullscreen}
                 className="text-xs font-semibold text-zinc-300 hover:text-white transition-colors flex items-center gap-1 cursor-pointer"
               >
-                <Maximize2 className="h-3 w-3 text-orange-400" />
+                <Maximize2 className="h-3 w-3 text-indigo-400" />
                 Fullscreen
               </button>
             )}
           </div>
+
+          {/* All Games Selection Library */}
+          <div className="bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+              <div>
+                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                  <HardDrive className="h-4 w-4 text-indigo-400" />
+                  Arcade & Neo-Geo Game Library (Click to Launch)
+                </h3>
+                <span className="text-[11px] text-zinc-400">
+                  Saved in Cache: <strong className="text-indigo-400">{cachedIds.length}</strong> / {gamesList.length}
+                </span>
+              </div>
+
+              {/* Add Game by Link Button */}
+              <button
+                onClick={() => setShowImportModal(true)}
+                className="py-2 px-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-md shadow-indigo-600/20 flex items-center gap-1.5 cursor-pointer self-start sm:self-auto"
+              >
+                <Sparkles className="h-3.5 w-3.5" />
+                <span>+ Import via URL</span>
+              </button>
+            </div>
+
+            {/* 24 Items per page pagination calculations */}
+            {(() => {
+              const totalGames = gamesList.length;
+              const totalPages = Math.max(1, Math.ceil(totalGames / ITEMS_PER_PAGE));
+              const safePage = Math.min(currentPage, totalPages);
+              const startIndex = (safePage - 1) * ITEMS_PER_PAGE;
+              const paginatedGames = gamesList.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+              const handlePageChange = (newPage: number) => {
+                const params = new URLSearchParams(searchParams.toString());
+                params.set("page", String(newPage));
+                router.push(`?${params.toString()}`);
+              };
+
+              return (
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {paginatedGames.map((game) => {
+                      const isCached = cachedIds.includes(game.id);
+                      const isCurrent = selectedGame.id === game.id;
+                      const gameSlug = game.slug || game.id;
+
+                      return (
+                        <div
+                          key={game.id}
+                          onClick={() => {
+                            // Update browser URL to /arcade/[slug] and boot
+                            router.push(`/arcade/${gameSlug}`);
+                            handleGameSelectAndPlay(game);
+                          }}
+                          className={`p-3.5 rounded-xl border transition-all cursor-pointer relative group flex flex-col justify-between gap-2 ${
+                            isCurrent 
+                              ? "bg-indigo-950/30 border-indigo-500/60 shadow-lg shadow-indigo-600/10" 
+                              : "bg-zinc-900/80 hover:bg-zinc-850 border-zinc-800 hover:border-zinc-700"
+                          }`}
+                        >
+                          <div>
+                            {game.imageUrl && (
+                              <div className="w-full h-24 rounded-lg overflow-hidden bg-zinc-950 mb-2 border border-zinc-800/80">
+                                <img 
+                                  src={game.imageUrl} 
+                                  alt={game.title} 
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                />
+                              </div>
+                            )}
+                            <div className="flex items-start justify-between gap-2 mb-1.5">
+                              <span className="font-bold text-xs text-white group-hover:text-indigo-300 transition-colors">
+                                {game.shortTitle}
+                              </span>
+                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 font-mono">
+                                {game.category}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed mb-2">
+                              {game.desc}
+                            </p>
+                          </div>
+
+                          <div className="flex items-center justify-between pt-2 border-t border-zinc-800/60 text-[11px]">
+                            {isCached ? (
+                              <span className="flex items-center gap-1 text-emerald-400 font-medium">
+                                <CheckCircle2 className="h-3 w-3" />
+                                Saved in Cache
+                              </span>
+                            ) : (
+                              <span className="flex items-center gap-1 text-zinc-400">
+                                <Download className="h-3 w-3 text-indigo-400" />
+                                Download: {game.sizeText}
+                              </span>
+                            )}
+
+                            <div className="flex items-center gap-1">
+                              {isCached && (
+                                <button
+                                  onClick={(e) => handleDeleteCachedRom(game.id, e)}
+                                  className="p-1 rounded text-zinc-500 hover:text-rose-400 hover:bg-zinc-800 transition-colors"
+                                  title="Delete from browser cache"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </button>
+                              )}
+                              <span className="text-xs font-bold text-indigo-400 group-hover:translate-x-0.5 transition-transform">
+                                Play →
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Pagination Navigation Bar (24 games per page) */}
+                  {totalPages > 1 && (
+                    <div className="mt-6 pt-4 border-t border-zinc-800/80 flex flex-wrap items-center justify-between gap-3 text-xs">
+                      <div className="text-zinc-400">
+                        Showing <strong className="text-white">{startIndex + 1}</strong> - <strong className="text-white">{Math.min(startIndex + ITEMS_PER_PAGE, totalGames)}</strong> of <strong className="text-indigo-400">{totalGames}</strong> games
+                      </div>
+
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          disabled={safePage <= 1}
+                          onClick={() => handlePageChange(safePage - 1)}
+                          className="px-2.5 py-1.5 rounded-xl bg-zinc-950 border border-zinc-800 hover:border-indigo-500/40 text-zinc-300 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-all flex items-center gap-1"
+                        >
+                          <ChevronLeft className="h-3.5 w-3.5" />
+                          <span>Prev</span>
+                        </button>
+
+                        <div className="flex items-center gap-1">
+                          {Array.from({ length: totalPages }, (_, idx) => idx + 1).map((pageNum) => (
+                            <button
+                              key={pageNum}
+                              onClick={() => handlePageChange(pageNum)}
+                              className={`w-7 h-7 rounded-xl text-xs font-bold transition-all ${
+                                pageNum === safePage
+                                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/20"
+                                  : "bg-zinc-950 border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700"
+                              }`}
+                            >
+                              {pageNum}
+                            </button>
+                          ))}
+                        </div>
+
+                        <button
+                          disabled={safePage >= totalPages}
+                          onClick={() => handlePageChange(safePage + 1)}
+                          className="px-2.5 py-1.5 rounded-xl bg-zinc-950 border border-zinc-800 hover:border-indigo-500/40 text-zinc-300 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-all flex items-center gap-1"
+                        >
+                          <span>Next</span>
+                          <ChevronRight className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </>
+              );
+            })()}
+          </div>
         </div>
 
-        {/* Right 1 Col: Info, Neo Geo Guide & Controls */}
+        {/* Right 1 Col: Controls & Offline Storage Information */}
         <div className="flex flex-col gap-4">
           <div className="bg-zinc-900/80 border border-zinc-800 rounded-xl p-1 flex gap-1 text-xs">
             <button
               onClick={() => setActiveTab("controls")}
               className={`flex-1 py-2 rounded-lg font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 activeTab === "controls"
-                  ? "bg-orange-600 text-white shadow"
+                  ? "bg-indigo-600 text-white shadow"
                   : "text-zinc-400 hover:text-zinc-200"
               }`}
             >
               <Keyboard className="h-3.5 w-3.5" />
-              কন্ট্রোলস
+              Controls
+            </button>
+            <button
+              onClick={() => setActiveTab("storage")}
+              className={`flex-1 py-2 rounded-lg font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                activeTab === "storage"
+                  ? "bg-indigo-600 text-white shadow"
+                  : "text-zinc-400 hover:text-zinc-200"
+              }`}
+            >
+              <HardDrive className="h-3.5 w-3.5" />
+              Storage
             </button>
             <button
               onClick={() => setActiveTab("how")}
               className={`flex-1 py-2 rounded-lg font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 activeTab === "how"
-                  ? "bg-orange-600 text-white shadow"
+                  ? "bg-indigo-600 text-white shadow"
                   : "text-zinc-400 hover:text-zinc-200"
               }`}
             >
               <Info className="h-3.5 w-3.5" />
-              retrogames কৌশল
-            </button>
-            <button
-              onClick={() => setActiveTab("neogeo")}
-              className={`flex-1 py-2 rounded-lg font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                activeTab === "neogeo"
-                  ? "bg-orange-600 text-white shadow"
-                  : "text-zinc-400 hover:text-zinc-200"
-              }`}
-            >
-              <Cpu className="h-3.5 w-3.5" />
-              Neo Geo & KOF
+              Technology
             </button>
           </div>
 
           {/* Tab 1: Controls */}
           {activeTab === "controls" && (
             <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-5 flex flex-col gap-3 text-xs font-mono">
-              <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">আর্কেড / নিও-জিও ডিফল্ট কিবোর্ড কন্ট্রোল</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Cadillacs & KOF Keyboard Controls</span>
               <div className="space-y-2 pt-2">
                 <div className="flex justify-between py-1.5 border-b border-zinc-800/60">
-                  <span className="text-zinc-400">কয়েন প্রবেশ (Insert Coin)</span>
-                  <span className="text-amber-400 font-bold">Shift অথবা 5 / 6</span>
+                  <span className="text-zinc-400">Insert Coin</span>
+                  <span className="text-amber-400 font-bold">Shift or 5 / 6</span>
                 </div>
                 <div className="flex justify-between py-1.5 border-b border-zinc-800/60">
-                  <span className="text-zinc-400">স্টার্ট বাটন (Start / 1P)</span>
-                  <span className="text-emerald-400 font-bold">Enter অথবা 1 / 2</span>
+                  <span className="text-zinc-400">Start / 1P</span>
+                  <span className="text-emerald-400 font-bold">Enter or 1 / 2</span>
                 </div>
                 <div className="flex justify-between py-1.5 border-b border-zinc-800/60">
-                  <span className="text-zinc-400">দিকনির্দেশ (D-Pad / Joystick)</span>
+                  <span className="text-zinc-400">Joystick (Direction)</span>
                   <span className="text-cyan-400 font-bold">Arrow Keys / W,A,S,D</span>
                 </div>
                 <div className="flex justify-between py-1.5 border-b border-zinc-800/60">
-                  <span className="text-zinc-400">অ্যাটাক / ঘুষি (Button A)</span>
-                  <span className="text-rose-400 font-bold">Z অথবা J</span>
+                  <span className="text-zinc-400">Attack / Punch (Button A)</span>
+                  <span className="text-indigo-400 font-bold">Z or J</span>
                 </div>
                 <div className="flex justify-between py-1.5 border-b border-zinc-800/60">
-                  <span className="text-zinc-400">জাম্প / লাথি (Button B)</span>
-                  <span className="text-indigo-400 font-bold">X অথবা K</span>
+                  <span className="text-zinc-400">Jump / Kick (Button B)</span>
+                  <span className="text-indigo-300 font-bold">X or K</span>
                 </div>
                 <div className="flex justify-between py-1.5 border-b border-zinc-800/60">
-                  <span className="text-zinc-400">মুস্তাফা স্পেশাল অ্যাটাক</span>
-                  <span className="text-orange-400 font-bold">Z + X একসাথে</span>
+                  <span className="text-zinc-400">Mustapha Special Attack</span>
+                  <span className="text-indigo-400 font-bold">Z + X Together</span>
                 </div>
                 <div className="flex justify-between py-1">
-                  <span className="text-zinc-400">ইউএসবি কন্ট্রোলার সাপোর্ট</span>
-                  <span className="text-purple-400 font-bold">প্লাগ অ্যান্ড প্লে অটো ডিটেক্ট</span>
+                  <span className="text-zinc-400">Gamepad / USB Controller</span>
+                  <span className="text-purple-400 font-bold">Auto-Detected</span>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Tab 2: How retrogames.cc works */}
-          {activeTab === "how" && (
-            <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-5 flex flex-col gap-4 text-xs">
-              <h3 className="font-semibold text-sm text-white flex items-center gap-2">
-                <Flame className="h-4 w-4 text-orange-400" />
-                retrogames.cc কীভাবে গেমগুলো ব্রাউজারে চালায়?
-              </h3>
+          {/* Tab 2: IndexedDB Browser Storage */}
+          {activeTab === "storage" && (
+            <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-5 flex flex-col gap-3 text-xs">
+              <h4 className="font-bold text-white flex items-center gap-2">
+                <HardDrive className="h-4 w-4 text-emerald-400" />
+                IndexedDB Offline Browser Storage
+              </h4>
               <p className="text-zinc-300 leading-relaxed">
-                <strong className="text-white">১. Emscripten & WebAssembly:</strong> retrogames.cc সাইটটি মূলত বিখ্যাত সি++ এমুলেটর (MAME এবং FB Alpha / FinalBurn Neo)-কে WebAssembly (.wasm)-এ কম্পাইল করেছে।
-              </p>
-              <p className="text-zinc-300 leading-relaxed">
-                <strong className="text-white">২. EmulatorJS ফ্রেমওয়ার্ক:</strong> এটি আপনার ব্রাউজারের ভেতর মেমরিতে একটি ভার্চুয়াল CPS-1.5 বা Neo Geo মাদারবোর্ড তৈরি করে।
-              </p>
-              <p className="text-zinc-300 leading-relaxed">
-                <strong className="text-white">৩. ৬০ FPS পারফরম্যান্স:</strong> যেহেতু আর্কেড গেমগুলো 2D স্প্রাইট ভিত্তিক এবং ১৬-বিট/৩২-বিট আর্কিটেকচার, তাই যেকোনো ম্যাকবুক (M1) বা উইন্ডোজ পিসির ব্রাউজারে এগুলো ফুল ৬০ FPS স্পিডে চলে।
-              </p>
-            </div>
-          )}
-
-          {/* Tab 3: Neo Geo & King of Fighters */}
-          {activeTab === "neogeo" && (
-            <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-5 flex flex-col gap-4 text-xs">
-              <h3 className="font-semibold text-sm text-white flex items-center gap-2">
-                <Zap className="h-4 w-4 text-amber-400" />
-                Neo Geo এমুলেটর ও King of Fighters কীভাবে খেলবেন?
-              </h3>
-              <p className="text-zinc-300 leading-relaxed">
-                উইন্ডোজে আপনি হয়তো <strong>NeoRAGEx, WinKawaks অথবা FinalBurn</strong> দিয়ে KOF খেলতেন। ব্রাউজারে চালানোর নিয়ম:
+                Powered by your browser's persistent <strong>IndexedDB object store</strong>.
               </p>
               <ul className="space-y-2 text-zinc-300">
                 <li className="p-2.5 rounded-xl bg-zinc-800/50 border border-zinc-700/50">
-                  <strong className="text-amber-400 block mb-0.5">রম ফাইল ফরম্যাট:</strong>
-                  গেমগুলো সবসময় <code className="text-orange-300">kof98.zip</code>, <code className="text-orange-300">kof2002.zip</code> ইত্যাদি জিপ ফরম্যাটে থাকতে হবে (আনজিপ করবেন না)।
+                  <strong className="text-indigo-400 block mb-0.5">Download Once:</strong>
+                  The first time you click a game, the ROM file is downloaded and cached directly inside your browser storage.
                 </li>
                 <li className="p-2.5 rounded-xl bg-zinc-800/50 border border-zinc-700/50">
-                  <strong className="text-emerald-400 block mb-0.5">নিও-জিও বায়োস (neogeo.zip):</strong>
-                  নিও-জিও আর্কেড গেমের জন্য মাদারবোর্ড বায়োস দরকার হয়। আমাদের এই আর্কেড ইঞ্জিনে অটোমেটিক আর্কেড কোর লোডার অন্তর্ভুক্ত রয়েছে।
+                  <strong className="text-emerald-400 block mb-0.5">Zero Future Downloads:</strong>
+                  Subsequent runs launch instantaneously in less than a second even without an active internet connection.
                 </li>
                 <li className="p-2.5 rounded-xl bg-zinc-800/50 border border-zinc-700/50">
-                  <strong className="text-cyan-400 block mb-0.5">লোকাল রম সাপোর্ট:</strong>
-                  আপনার পিসির যেকোনো KOF বা মেটাল স্লাগ .zip ফাইল সরাসরি টেনে এনে ড্রপ করলেই ৬০ FPS-এ রান করবে!
+                  <strong className="text-cyan-400 block mb-0.5">100% Private:</strong>
+                  ROM files remain stored locally on your device without transmitting data to external servers.
                 </li>
               </ul>
             </div>
           )}
+
+          {/* Tab 3: Tech */}
+          {activeTab === "how" && (
+            <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-5 flex flex-col gap-4 text-xs">
+              <h4 className="font-bold text-white flex items-center gap-2">
+                <Cpu className="h-4 w-4 text-indigo-400" />
+                Capcom CPS & SNK Neo Geo Arcade Engine
+              </h4>
+              <p className="text-zinc-300 leading-relaxed">
+                Cadillacs and Dinosaurs (1993) and King of Fighters (1998-2002) run via optimized FinalBurn Neo and MAME WebAssembly cores, utilizing hardware-accelerated WebGL rendering for 60 FPS gameplay.
+              </p>
+            </div>
+          )}
         </div>
       </main>
+
+      {/* Confirmation & Download Prompt Modal */}
+      {showConfirmModal && pendingGameToDownload && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-6 shadow-2xl flex flex-col gap-4">
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shrink-0">
+                <Download className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="font-bold text-white text-base">
+                  Save this game to browser memory?
+                </h3>
+                <span className="text-xs text-zinc-400">Download once to play offline anytime</span>
+              </div>
+            </div>
+
+            <div className="bg-zinc-950/80 border border-zinc-800/80 rounded-xl p-3.5 flex flex-col gap-1.5 text-xs">
+              <div className="flex justify-between">
+                <span className="text-zinc-400">Game:</span>
+                <span className="text-white font-bold">{pendingGameToDownload.title}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-zinc-400">Category:</span>
+                <span className="text-indigo-400 font-mono">{pendingGameToDownload.category}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-zinc-400">Download Size:</span>
+                <span className="text-emerald-400 font-bold">{pendingGameToDownload.sizeText}</span>
+              </div>
+            </div>
+
+            <p className="text-xs text-zinc-400 leading-relaxed">
+              Once downloaded, this game will be saved directly in your browser's persistent storage and will boot immediately at 60 FPS without needing to download again.
+            </p>
+
+            <div className="flex items-center gap-2 pt-2">
+              <button
+                onClick={() => setShowConfirmModal(false)}
+                className="flex-1 py-2.5 px-4 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs font-semibold text-zinc-300 hover:text-white transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={() => downloadAndBootGame(pendingGameToDownload)}
+                className="flex-1 py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-bold text-white shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <Download className="h-3.5 w-3.5" />
+                <span>Download & Play</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Auto Import Game Modal (for emulatorjs.com/api/fba?name=... or direct zip links) */}
+      {showImportModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl flex flex-col gap-4">
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shrink-0">
+                <Sparkles className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="font-bold text-white text-base">
+                  Import New Game via Link
+                </h3>
+                <span className="text-xs text-zinc-400">Enter a RetroGames or direct .zip URL to auto-import</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <div>
+                <label className="text-xs text-zinc-300 font-semibold mb-1 block">
+                  Game URL or EmulatorJS API Link:
+                </label>
+                <input
+                  type="text"
+                  value={importUrlInput}
+                  onChange={(e) => setImportUrlInput(e.target.value)}
+                  placeholder="https://www.emulatorjs.com/api/fba?name=dino.zip or .zip link"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs text-zinc-300 font-semibold mb-1 block">
+                  Game Title (Optional):
+                </label>
+                <input
+                  type="text"
+                  value={importTitleInput}
+                  onChange={(e) => setImportTitleInput(e.target.value)}
+                  placeholder="e.g. Cadillacs and Dinosaurs, KOF 2002, etc."
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+
+              {importError && (
+                <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-800/60 text-rose-300 text-xs flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4 shrink-0 text-rose-400" />
+                  <span>{importError}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="p-3 rounded-xl bg-zinc-950 border border-zinc-800/80 text-[11px] text-zinc-400 flex flex-col gap-1">
+              <span className="text-indigo-400 font-semibold">What happens:</span>
+              <span>• The server downloads the ROM archive into your <code className="text-zinc-200">public/roms/</code> folder.</span>
+              <span>• The game is instantly added to your Arcade list for 1-click play.</span>
+            </div>
+
+            <div className="flex items-center gap-2 pt-2">
+              <button
+                onClick={() => {
+                  setShowImportModal(false);
+                  setImportError("");
+                }}
+                className="flex-1 py-2.5 px-4 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs font-semibold text-zinc-300 hover:text-white transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={handleImportRom}
+                disabled={isImporting}
+                className="flex-1 py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-bold text-white shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+              >
+                {isImporting ? (
+                  <span>Downloading...</span>
+                ) : (
+                  <>
+                    <Download className="h-3.5 w-3.5" />
+                    <span>Download & Add to List</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Controller Modal */}
       <ControlsSettingsModal
@@ -561,7 +1114,7 @@ export default function ArcadeEmulator() {
 
       {/* Footer */}
       <footer className="border-t border-zinc-900 px-6 py-4 text-center text-xs text-zinc-500">
-        Powered by Next.js, WebAssembly & FinalBurn / MAME Arcade Core. Built for 60 FPS Classic Gaming.
+        Powered by Next.js, IndexedDB Storage & FinalBurn / MAME Arcade Core.
       </footer>
     </div>
   );

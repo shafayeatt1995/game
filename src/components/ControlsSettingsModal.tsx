@@ -89,7 +89,7 @@ export default function ControlsSettingsModal({ isOpen, onClose }: ControlsSetti
   };
 
   const handleResetDefaults = () => {
-    if (confirm("আপনি কি সমস্ত কন্ট্রোল ডিফল্ট সেটিংসে ফিরিয়ে নিতে চান?")) {
+    if (confirm("Do you want to reset all controls to default settings?")) {
       const resetConfig: InputConfig = {
         inputMode: config.inputMode,
         gamepadIndex: 0,
@@ -109,14 +109,14 @@ export default function ControlsSettingsModal({ isOpen, onClose }: ControlsSetti
         {/* Header */}
         <div className="px-6 py-5 border-b border-zinc-800/80 flex items-center justify-between bg-zinc-900/50">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400">
+            <div className="h-10 w-10 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
               <SlidersHorizontal className="h-5 w-5" />
             </div>
             <div>
               <h2 className="text-base font-bold text-white flex items-center gap-2">
-                কন্ট্রোলার ও ইনপুট কনফিগারেশন
+                Controller & Input Configuration
               </h2>
-              <p className="text-xs text-zinc-400">আপনার কিবোর্ড বা গেমপ্যাড দিয়ে খেলার জন্য বাটন কনফিগার করুন</p>
+              <p className="text-xs text-zinc-400">Configure keybindings for your keyboard or USB / Bluetooth gamepad</p>
             </div>
           </div>
           <button
@@ -128,45 +128,45 @@ export default function ControlsSettingsModal({ isOpen, onClose }: ControlsSetti
         </div>
 
         {/* Input Mode Selector (Keyboard vs Gamepad) */}
-        <div className="p-6 border-b border-zinc-800/60 bg-zinc-900/30">
+        <div className="p-4 sm:p-6 border-b border-zinc-800/60 bg-zinc-900/30">
           <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 block mb-3">
-            প্রাইমারি ইনপুট মেথড নির্বাচন করুন
+            Select Primary Input Method
           </label>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <button
               onClick={() => setConfig((prev) => ({ ...prev, inputMode: "keyboard" }))}
-              className={`p-4 rounded-2xl border flex items-center gap-3 transition-all cursor-pointer ${
+              className={`p-3.5 sm:p-4 rounded-2xl border flex items-center gap-3 transition-all cursor-pointer ${
                 config.inputMode === "keyboard"
-                  ? "bg-blue-600/20 border-blue-500 text-white shadow-lg shadow-blue-600/10"
+                  ? "bg-indigo-600/20 border-indigo-500 text-white shadow-lg shadow-indigo-600/10"
                   : "bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700"
               }`}
             >
-              <div className={`p-2.5 rounded-xl ${config.inputMode === "keyboard" ? "bg-blue-500 text-white" : "bg-zinc-800 text-zinc-400"}`}>
+              <div className={`p-2.5 rounded-xl ${config.inputMode === "keyboard" ? "bg-indigo-500 text-white" : "bg-zinc-800 text-zinc-400"}`}>
                 <Keyboard className="h-5 w-5" />
               </div>
               <div className="text-left">
-                <div className="text-sm font-bold">কীবোর্ড মোড</div>
-                <div className="text-xs text-zinc-400">কাস্টম কি-বোর্ডের মাধ্যমে খেলুন</div>
+                <div className="text-sm font-bold">Keyboard Mode</div>
+                <div className="text-xs text-zinc-400">Play using customizable keyboard keys</div>
               </div>
             </button>
 
             <button
               onClick={() => setConfig((prev) => ({ ...prev, inputMode: "gamepad" }))}
-              className={`p-4 rounded-2xl border flex items-center gap-3 transition-all cursor-pointer ${
+              className={`p-3.5 sm:p-4 rounded-2xl border flex items-center gap-3 transition-all cursor-pointer ${
                 config.inputMode === "gamepad"
-                  ? "bg-cyan-600/20 border-cyan-500 text-white shadow-lg shadow-cyan-600/10"
+                  ? "bg-indigo-600/20 border-indigo-500 text-white shadow-lg shadow-indigo-600/10"
                   : "bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700"
               }`}
             >
-              <div className={`p-2.5 rounded-xl ${config.inputMode === "gamepad" ? "bg-cyan-500 text-white" : "bg-zinc-800 text-zinc-400"}`}>
+              <div className={`p-2.5 rounded-xl ${config.inputMode === "gamepad" ? "bg-indigo-500 text-white" : "bg-zinc-800 text-zinc-400"}`}>
                 <Gamepad2 className="h-5 w-5" />
               </div>
               <div className="text-left">
-                <div className="text-sm font-bold">গেমপ্যাড / কন্ট্রোলার মোড</div>
+                <div className="text-sm font-bold">Gamepad / Controller Mode</div>
                 <div className="text-xs text-zinc-400">
                   {connectedGamepads.length > 0 
-                    ? `সংযুক্ত: ${connectedGamepads[0].id.substring(0, 20)}...`
-                    : "কোনো কন্ট্রোলার পাওয়া যায়নি (বাটন চাপুন)"}
+                    ? `Connected: ${connectedGamepads[0].id.substring(0, 20)}...`
+                    : "No controller detected (press any button)"}
                 </div>
               </div>
             </button>
@@ -174,13 +174,13 @@ export default function ControlsSettingsModal({ isOpen, onClose }: ControlsSetti
 
           {/* Gamepad Status Banner */}
           {config.inputMode === "gamepad" && (
-            <div className="mt-4 p-3.5 rounded-xl bg-cyan-950/30 border border-cyan-500/20 text-xs text-cyan-300 flex items-center justify-between">
+            <div className="mt-4 p-3.5 rounded-xl bg-indigo-950/30 border border-indigo-500/20 text-xs text-indigo-300 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className={`h-2.5 w-2.5 rounded-full ${connectedGamepads.length > 0 ? "bg-emerald-400 animate-pulse" : "bg-amber-400"}`}></span>
                 <span>
                   {connectedGamepads.length > 0
-                    ? `সক্রিয় কন্ট্রোলার: ${connectedGamepads[0].id}`
-                    : "আপনার কন্ট্রোলারের যেকোনো বাটন চাপুন যাতে ব্রাউজার এটি শনাক্ত করতে পারে।"}
+                    ? `Active Controller: ${connectedGamepads[0].id}`
+                    : "Press any button on your gamepad so the browser can detect it."}
                 </span>
               </div>
             </div>
@@ -192,10 +192,10 @@ export default function ControlsSettingsModal({ isOpen, onClose }: ControlsSetti
           {config.inputMode === "keyboard" ? (
             <div>
               <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-semibold text-zinc-400">যেকোনো কি পরিবর্তন করতে বাটনে ক্লিক করে নতুন কি প্রেস করুন</span>
+                <span className="text-xs font-semibold text-zinc-400">Click any key badge and press a new key to remap</span>
                 {recordingButton && (
                   <span className="text-xs font-bold text-amber-400 animate-pulse">
-                    নতুন কি চাপুন... (Esc চাপলে বাতিল)
+                    Press new key... (Esc to cancel)
                   </span>
                 )}
               </div>
@@ -234,7 +234,7 @@ export default function ControlsSettingsModal({ isOpen, onClose }: ControlsSetti
                                     : "bg-zinc-800 hover:bg-zinc-700 text-cyan-400 border border-zinc-700"
                                 }`}
                               >
-                                {isRec ? "প্রেস করুন..." : keyDef.code || keyDef.key}
+                                {isRec ? "Press..." : keyDef.code || keyDef.key}
                               </button>
                             </div>
                           );
@@ -249,10 +249,10 @@ export default function ControlsSettingsModal({ isOpen, onClose }: ControlsSetti
               <div className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-3">
                 <h4 className="text-sm font-semibold text-white flex items-center gap-2">
                   <Gamepad2 className="h-4 w-4 text-cyan-400" />
-                  স্বয়ংক্রিয় গেমপ্যাড ম্যাপিং (W3C Standard)
+                  Automatic Gamepad Mapping (W3C Standard)
                 </h4>
                 <p className="text-xs text-zinc-400 leading-relaxed">
-                  আপনার কন্ট্রোলার সংযুক্ত থাকলেই এটি সরাসরি কাজ করবে। নিচে অরিজিনাল প্লেস্টেশন ২ কন্ট্রোলারের সাথে সাধারণ গেমপ্যাডের ডিফল্ট ম্যাপিং দেওয়া হলো:
+                  Your controller works instantly out of the box. Below is the standard mapping configured for PlayStation, Xbox, and generic controllers:
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 text-xs font-mono">
@@ -297,7 +297,7 @@ export default function ControlsSettingsModal({ isOpen, onClose }: ControlsSetti
             className="px-4 py-2 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all flex items-center gap-1.5 cursor-pointer"
           >
             <RotateCcw className="h-3.5 w-3.5" />
-            ডিফল্ট রিসেট
+            Reset Defaults
           </button>
 
           <div className="flex items-center gap-3">
@@ -305,21 +305,21 @@ export default function ControlsSettingsModal({ isOpen, onClose }: ControlsSetti
               onClick={onClose}
               className="px-4 py-2 rounded-xl text-xs font-medium text-zinc-400 hover:text-white transition-all cursor-pointer"
             >
-              বাতিল
+              Cancel
             </button>
             <button
               onClick={handleSave}
-              className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition-all shadow-lg shadow-blue-600/30 flex items-center gap-1.5 cursor-pointer"
+              className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-all shadow-lg shadow-indigo-600/30 flex items-center gap-1.5 cursor-pointer"
             >
               {saveToast ? (
                 <>
                   <Check className="h-4 w-4" />
-                  সংরক্ষিত হয়েছে!
+                  Saved!
                 </>
               ) : (
                 <>
                   <Save className="h-4 w-4" />
-                  সেভ করুন
+                  Save Changes
                 </>
               )}
             </button>

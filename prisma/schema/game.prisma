@@ -1,0 +1,18 @@
+model Game {
+  id          String   @id @map("_id")
+  slug        String?  @unique
+  title       String
+  shortTitle  String
+  category    String   @default("arcade")
+  sizeText    String
+  desc        String
+  romUrl      String
+  romKey      String?
+  imageUrl    String?
+  imageKey    String?
+  directLink  String?
+  addedAt     DateTime @default(now())
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

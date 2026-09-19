@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import ArcadeEmulator from "@/components/ArcadeEmulator";
 import type { Metadata } from "next";
 
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 };
 
 export default function ArcadePage() {
-  return <ArcadeEmulator />;
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Arcade Hub...</div>}>
+      <ArcadeEmulator />
+    </Suspense>
+  );
 }

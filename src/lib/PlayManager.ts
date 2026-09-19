@@ -101,30 +101,30 @@ export async function bootPS2File(file: File, onProgress?: (msg: string) => void
   const fileName = file.name;
   const fileDotPos = fileName.lastIndexOf(".");
   if (fileDotPos === -1) {
-    throw new Error("ফাইলটিতে কোনো এক্সটেনশন (.iso, .bin, .elf ইত্যাদি) পাওয়া যায়নি।");
+    throw new Error("No file extension (.iso, .bin, .elf, etc.) found in the file.");
   }
 
   const ext = fileName.substring(fileDotPos).toLowerCase();
 
-  onProgress?.(`"${fileName}" লোড হচ্ছে...`);
+  onProgress?.(`Loading "${fileName}"...`);
 
   if (ext === ".elf") {
-    onProgress?.("ELF ফাইল মেমোরিতে রাইট করা হচ্ছে...");
+    onProgress?.("Writing ELF file into memory...");
     const buffer = await file.arrayBuffer();
     const data = new Uint8Array(buffer);
     const stream = instance.FS.open(fileName, "w+");
     instance.FS.write(stream, data, 0, data.length, 0);
     instance.FS.close(stream);
-    onProgress?.("ELF বুট করা হচ্ছে...");
+    onProgress?.("Booting ELF binary...");
     instance.bootElf(fileName);
   } else {
     // ISO, BIN, CSO, CHD, ISZ
     if (!instance.discImageDevice) {
       instance.discImageDevice = new DiscImageDevice(instance);
     }
-    onProgress?.("ডিস্ক স্ট্রিমিং ডিভাইস মাউন্ট করা হচ্ছে...");
+    onProgress?.("Mounting disc streaming device...");
     instance.discImageDevice.setFile(file);
-    onProgress?.("গেম বুট হচ্ছে...");
+    onProgress?.("Booting disc image...");
     instance.bootDiscImage(fileName);
   }
 }

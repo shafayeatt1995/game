@@ -42,7 +42,7 @@ declare global {
 export default function PS1Emulator() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [statusText, setStatusText] = useState<string>("PS1 গেম ফাইল (.iso, .bin, .cue, .pbp, .chd) সিলেক্ট করুন");
+  const [statusText, setStatusText] = useState<string>("Select a PS1 game file (.iso, .bin, .cue, .pbp, .chd)");
   const [fps, setFps] = useState<number>(60);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isPaused, setIsPaused] = useState<boolean>(false);
@@ -94,11 +94,11 @@ export default function PS1Emulator() {
     const validExts = [".iso", ".bin", ".cue", ".pbp", ".chd", ".img", ".7z", ".zip"];
     const ext = file.name.substring(file.name.lastIndexOf(".")).toLowerCase();
     if (!validExts.includes(ext)) {
-      alert("সমর্থিত PS1 ফরম্যাট: .ISO, .BIN, .CUE, .PBP, .CHD, .IMG");
+      alert("Supported PS1 formats: .ISO, .BIN, .CUE, .PBP, .CHD, .IMG");
       return;
     }
     setSelectedFile(file);
-    setStatusText(`প্রস্তুত: ${file.name} (${(file.size / (1024 * 1024)).toFixed(1)} MB)`);
+    setStatusText(`Ready: ${file.name} (${(file.size / (1024 * 1024)).toFixed(1)} MB)`);
   };
 
   const startEmulator = () => {
@@ -106,7 +106,7 @@ export default function PS1Emulator() {
 
     try {
       setIsLoading(true);
-      setStatusText("PS1 রি-আর্মড (ReARMed) ৬০ FPS কোর বুট হচ্ছে...");
+      setStatusText("Booting PCSX ReARMed 60 FPS Core...");
 
       const fileUrl = URL.createObjectURL(selectedFile);
 
@@ -120,7 +120,7 @@ export default function PS1Emulator() {
         setIsPlaying(true);
         setIsPaused(false);
         setIsLoading(false);
-        setStatusText(`চলছে: ${selectedFile.name} (PS1 Full 60 FPS)`);
+        setStatusText(`Running: ${selectedFile.name} (PS1 Full 60 FPS)`);
       };
 
       // Load EmulatorJS loader script
@@ -130,18 +130,18 @@ export default function PS1Emulator() {
       script.onload = () => {
         setIsPlaying(true);
         setIsLoading(false);
-        setStatusText(`চলছে: ${selectedFile.name}`);
+        setStatusText(`Running: ${selectedFile.name}`);
       };
       script.onerror = () => {
         setIsLoading(false);
-        setStatusText("এমুলেটর স্ক্রিপ্ট লোড করতে ব্যর্থ হয়েছে। ইন্টারনেট কানেকশন চেক করুন।");
+        setStatusText("Failed to load emulator script. Please check your internet connection.");
       };
 
       document.body.appendChild(script);
     } catch (err: any) {
       console.error(err);
       setIsLoading(false);
-      setStatusText(`সমস্যা হয়েছে: ${err.message || "অজানা ত্রুটি"}`);
+      setStatusText(`Error: ${err.message || "Unknown error"}`);
     }
   };
 
@@ -151,11 +151,11 @@ export default function PS1Emulator() {
       if (isPaused) {
         window.EJS_emulator.play?.();
         setIsPaused(false);
-        setStatusText(`চলছে: ${selectedFile?.name || "PS1 Game"}`);
+        setStatusText(`Running: ${selectedFile?.name || "PS1 Game"}`);
       } else {
         window.EJS_emulator.pause?.();
         setIsPaused(true);
-        setStatusText("গেম সাময়িকভাবে পজ (Pause) করা হয়েছে");
+        setStatusText("Game is paused");
       }
     } else {
       setIsPaused(!isPaused);
@@ -173,82 +173,84 @@ export default function PS1Emulator() {
   };
 
   const restartEmulator = () => {
-    if (confirm("আপনি কি গেমটি রিস্টার্ট বা নতুন ফাইল লোড করতে চান?")) {
+    if (confirm("Do you want to restart or load a new game?")) {
       window.location.reload();
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-zinc-900 to-black text-slate-100 flex flex-col font-sans select-none">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans select-none">
       {/* Top Navigation Bar */}
-      <header className="border-b border-zinc-800/80 bg-zinc-950/70 backdrop-blur-md px-6 py-3.5 flex items-center justify-between sticky top-0 z-50">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-emerald-600 via-teal-600 to-cyan-400 p-0.5 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-              <div className="h-full w-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-                <Zap className="h-5 w-5 text-emerald-400" />
-              </div>
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-emerald-400 via-teal-200 to-cyan-400 bg-clip-text text-transparent">
-                  PlaySphere PS1
-                </h1>
-                <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                  60 FPS ReARMed
-                </span>
-              </div>
-              <p className="text-xs text-zinc-400">PlayStation 1 Full-Speed High Performance Player</p>
-            </div>
+      <header className="border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-50">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 p-0.5 flex items-center justify-center shadow-lg shadow-indigo-500/10">
+            <Zap className="h-5 w-5 text-indigo-400" />
           </div>
-
-          {/* Console Switcher Tabs */}
-          <nav className="hidden md:flex items-center gap-1 bg-zinc-900/90 border border-zinc-800 p-1 rounded-xl text-xs ml-4">
-            <Link
-              href="/"
-              className="px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white transition-colors"
-            >
-              হোম
-            </Link>
-            <Link
-              href="/arcade"
-              className="px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white transition-colors"
-            >
-              Arcade & Neo-Geo
-            </Link>
-            <Link
-              href="/ps1"
-              className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold shadow"
-            >
-              PS1 (60 FPS)
-            </Link>
-            <Link
-              href="/ps2"
-              className="px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white transition-colors"
-            >
-              PS2 (Play!)
-            </Link>
-            <Link
-              href="/sourceports"
-              className="px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white transition-colors"
-            >
-              reVC (GTA 60+ FPS)
-            </Link>
-          </nav>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                <span>PlaySphere PS1</span>
+              </h1>
+              <span className="hidden sm:inline-flex text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse"></span>
+                60 FPS ReARMed
+              </span>
+            </div>
+            <p className="text-[11px] sm:text-xs text-zinc-400">PlayStation 1 Full-Speed High Performance Player</p>
+          </div>
         </div>
 
+        {/* Console Switcher Tabs - Mobile scrollable */}
+        <nav className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1 sm:pb-0 text-xs">
+          <Link
+            href="/"
+            className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
+          >
+            Home
+          </Link>
+          <Link
+            href="/arcade"
+            className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
+          >
+            Arcade & Neo-Geo
+          </Link>
+          <Link
+            href="/ps1"
+            className="px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-sm shrink-0"
+          >
+            PS1 (60 FPS)
+          </Link>
+          <Link
+            href="/ps2"
+            className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
+          >
+            PS2 (Play!)
+          </Link>
+          <Link
+            href="/sourceports"
+            className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
+          >
+            reVC (GTA 60+ FPS)
+          </Link>
+          <Link
+            href="/admin"
+            className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-indigo-500/30 text-indigo-300 hover:text-indigo-200 hover:bg-indigo-500/10 transition-colors shrink-0"
+          >
+            Admin
+          </Link>
+        </nav>
+
         {/* Header Right Stats & Controls */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2">
           {/* FPS Checkmark Toggle */}
-          <label className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all text-xs text-zinc-300 cursor-pointer select-none">
+          <label className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all text-xs text-zinc-300 cursor-pointer select-none">
             <input
               type="checkbox"
               checked={showFps}
               onChange={(e) => toggleShowFps(e.target.checked)}
-              className="h-4 w-4 rounded bg-zinc-950 border-zinc-700 text-emerald-600 focus:ring-0 focus:ring-offset-0 cursor-pointer accent-emerald-600"
+              className="h-3.5 w-3.5 sm:h-4 sm:w-4 rounded bg-zinc-950 border-zinc-700 text-indigo-600 focus:ring-0 focus:ring-offset-0 cursor-pointer accent-indigo-600"
             />
-            <span className="font-medium">FPS শো করুন</span>
+            <span className="font-medium text-[11px] sm:text-xs">FPS</span>
           </label>
 
           {isPlaying && (
@@ -266,23 +268,23 @@ export default function PS1Emulator() {
                 onClick={togglePause}
                 className={`p-2 rounded-xl border transition-all flex items-center gap-1.5 text-xs font-medium cursor-pointer ${
                   isPaused 
-                    ? "bg-emerald-600/20 border-emerald-500/40 text-emerald-300 hover:bg-emerald-600/30" 
+                    ? "bg-indigo-600/20 border-indigo-500/40 text-indigo-300 hover:bg-indigo-600/30" 
                     : "bg-zinc-900 border-zinc-800 hover:border-zinc-700 text-zinc-300 hover:text-white"
                 }`}
                 title={isPaused ? "Resume Game" : "Pause Game"}
               >
-                {isPaused ? <Play className="h-4 w-4 fill-current text-emerald-400" /> : <Pause className="h-4 w-4" />}
-                <span className="hidden md:inline">{isPaused ? "চালিয়ে যান" : "পজ (Pause)"}</span>
+                {isPaused ? <Play className="h-4 w-4 fill-current text-indigo-400" /> : <Pause className="h-4 w-4" />}
+                <span className="hidden md:inline">{isPaused ? "Resume" : "Pause"}</span>
               </button>
 
               {/* Restart Button */}
               <button
                 onClick={restartEmulator}
                 className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-zinc-300 hover:text-rose-400 transition-all flex items-center gap-1.5 text-xs font-medium cursor-pointer"
-                title="রিস্টার্ট করুন"
+                title="Restart"
               >
                 <RotateCcw className="h-4 w-4" />
-                <span className="hidden md:inline">রিস্টার্ট</span>
+                <span className="hidden md:inline">Restart</span>
               </button>
             </>
           )}
@@ -290,24 +292,24 @@ export default function PS1Emulator() {
           {/* Controls Settings Button */}
           <button
             onClick={() => setIsSettingsOpen(true)}
-            className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-emerald-500/50 text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 text-xs font-medium shadow-sm cursor-pointer"
-            title="কন্ট্রোলার / কিবোর্ড সেটিংস"
+            className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-indigo-500/50 text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 text-xs font-medium shadow-sm cursor-pointer"
+            title="Controller / Keyboard Settings"
           >
-            <SlidersHorizontal className="h-4 w-4 text-emerald-400" />
-            <span className="hidden sm:inline">কন্ট্রোল সেটিংস</span>
+            <SlidersHorizontal className="h-4 w-4 text-indigo-400" />
+            <span className="hidden sm:inline">Controls</span>
             <span className="text-[10px] px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400 uppercase font-mono">
-              {inputConfig.inputMode === "gamepad" ? "গেমপ্যাড" : "কিবোর্ড"}
+              {inputConfig.inputMode === "gamepad" ? "Gamepad" : "Keyboard"}
             </span>
           </button>
 
           {/* Fullscreen Button */}
           <button
             onClick={toggleFullscreen}
-            className="p-2 rounded-xl bg-gradient-to-r from-zinc-900 to-zinc-800 border border-zinc-700/80 hover:border-zinc-600 text-zinc-200 hover:text-white transition-all flex items-center gap-1.5 text-xs font-medium shadow-sm cursor-pointer"
-            title="ফুলস্ক্রিন টগল"
+            className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-indigo-500/50 text-zinc-200 hover:text-white transition-all flex items-center gap-1.5 text-xs font-medium shadow-sm cursor-pointer"
+            title="Toggle Fullscreen"
           >
-            {isFullscreen ? <Minimize2 className="h-4 w-4 text-emerald-400" /> : <Maximize2 className="h-4 w-4 text-emerald-400" />}
-            <span className="hidden sm:inline">{isFullscreen ? "সাধারণ স্ক্রিন" : "ফুলস্ক্রিন"}</span>
+            {isFullscreen ? <Minimize2 className="h-4 w-4 text-indigo-400" /> : <Maximize2 className="h-4 w-4 text-indigo-400" />}
+            <span className="hidden sm:inline">{isFullscreen ? "Exit Fullscreen" : "Fullscreen"}</span>
           </button>
         </div>
       </header>
@@ -329,7 +331,7 @@ export default function PS1Emulator() {
               className={`w-full h-full flex items-center justify-center ${isPlaying ? "block" : "hidden"}`}
             />
 
-            {/* In-Game Always-On-Top FPS Display (Always visible in top-right corner, even in fullscreen) */}
+            {/* In-Game Always-On-Top FPS Display */}
             {isPlaying && showFps && (
               <div className="absolute top-4 right-4 z-50 pointer-events-none select-none flex items-center gap-2 bg-black/75 backdrop-blur-md border border-zinc-700/80 px-3 py-1.5 rounded-xl text-xs font-mono shadow-2xl">
                 <span className={`inline-block w-2 h-2 rounded-full ${isPaused ? "bg-amber-400" : "bg-emerald-400 animate-pulse"}`}></span>
@@ -366,7 +368,7 @@ export default function PS1Emulator() {
             {!isPlaying && (
               <div
                 className={`absolute inset-0 flex flex-col items-center justify-center p-8 text-center transition-all z-20 ${
-                  isDragOver ? "bg-emerald-950/40 border-2 border-dashed border-emerald-500" : "bg-zinc-950"
+                  isDragOver ? "bg-indigo-950/40 border-2 border-dashed border-indigo-500" : "bg-zinc-950"
                 }`}
                 onDragOver={(e) => {
                   e.preventDefault();
@@ -382,21 +384,20 @@ export default function PS1Emulator() {
                 }}
               >
                 {/* Background Ambient Glow */}
-                <div className="absolute w-72 h-72 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none -top-10 -left-10" />
-                <div className="absolute w-72 h-72 bg-teal-600/10 rounded-full blur-3xl pointer-events-none -bottom-10 -right-10" />
+                <div className="absolute w-72 h-72 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none -top-10 -left-10" />
 
                 <div className="relative z-10 flex flex-col items-center max-w-md">
-                  <div className="h-16 w-16 mb-4 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-emerald-400 shadow-xl group-hover:scale-105 transition-transform">
-                    <Disc className={`h-8 w-8 ${selectedFile ? "text-emerald-400 animate-spin" : "text-teal-400"}`} />
+                  <div className="h-16 w-16 mb-4 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-indigo-400 shadow-xl group-hover:scale-105 transition-transform">
+                    <Disc className={`h-8 w-8 ${selectedFile ? "text-indigo-400 animate-spin" : "text-indigo-400"}`} />
                   </div>
 
                   <h2 className="text-lg sm:text-xl font-bold mb-2">
-                    {selectedFile ? selectedFile.name : "আপনার PS1 গেম নির্বাচন করুন"}
+                    {selectedFile ? selectedFile.name : "Select your PS1 game"}
                   </h2>
                   <p className="text-xs sm:text-sm text-zinc-400 mb-6">
                     {selectedFile 
-                      ? `সাইজ: ${(selectedFile.size / (1024 * 1024)).toFixed(1)} MB • M1 ম্যাকবুকে ৬০ FPS ফুল স্পিড রেন্ডার হবে`
-                      : "আপনার পিসির .ISO, .BIN, .CUE, বা .PBP ফাইল ড্র্যাগ করে এখানে ফেলুন অথবা ব্রাউজ করুন"}
+                      ? `Size: ${(selectedFile.size / (1024 * 1024)).toFixed(1)} MB • Full speed 60 FPS rendering ready`
+                      : "Drag and drop your .ISO, .BIN, .CUE, or .PBP file here or click browse"}
                   </p>
 
                   <div className="flex flex-wrap gap-3 justify-center">
@@ -416,25 +417,25 @@ export default function PS1Emulator() {
                       onClick={() => fileInputRef.current?.click()}
                       className="px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-sm font-medium transition-all flex items-center gap-2 hover:border-zinc-500 shadow-md cursor-pointer"
                     >
-                      <FolderOpen className="h-4 w-4 text-emerald-400" />
-                      ফাইল ব্রাউজ করুন
+                      <FolderOpen className="h-4 w-4 text-indigo-400" />
+                      Browse File
                     </button>
 
                     {selectedFile && (
                       <button
                         onClick={startEmulator}
                         disabled={isLoading}
-                        className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-sm transition-all shadow-lg shadow-emerald-600/30 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                        className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm transition-all shadow-lg shadow-indigo-600/30 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                       >
                         {isLoading ? (
                           <>
                             <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                            <span>লোড হচ্ছে...</span>
+                            <span>Loading...</span>
                           </>
                         ) : (
                           <>
                             <Play className="h-4 w-4 fill-current" />
-                            <span>গেম শুরু করুন (60 FPS)</span>
+                            <span>Start Game (60 FPS)</span>
                           </>
                         )}
                       </button>
@@ -488,34 +489,34 @@ export default function PS1Emulator() {
               onClick={() => setActiveTab("controls")}
               className={`flex-1 py-2 rounded-lg font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 activeTab === "controls"
-                  ? "bg-emerald-600 text-white shadow"
+                  ? "bg-indigo-600 text-white shadow"
                   : "text-zinc-400 hover:text-zinc-200"
               }`}
             >
               <Keyboard className="h-3.5 w-3.5" />
-              কন্ট্রোলস
+              Controls
             </button>
             <button
               onClick={() => setActiveTab("info")}
               className={`flex-1 py-2 rounded-lg font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 activeTab === "info"
-                  ? "bg-emerald-600 text-white shadow"
+                  ? "bg-indigo-600 text-white shadow"
                   : "text-zinc-400 hover:text-zinc-200"
               }`}
             >
               <Info className="h-3.5 w-3.5" />
-              ফিচারসমূহ
+              Features
             </button>
             <button
               onClick={() => setActiveTab("compatibility")}
               className={`flex-1 py-2 rounded-lg font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 activeTab === "compatibility"
-                  ? "bg-emerald-600 text-white shadow"
+                  ? "bg-indigo-600 text-white shadow"
                   : "text-zinc-400 hover:text-zinc-200"
               }`}
             >
               <Cpu className="h-3.5 w-3.5" />
-              সহায়তা
+              Help
             </button>
           </div>
 
@@ -523,18 +524,18 @@ export default function PS1Emulator() {
           {activeTab === "controls" && (
             <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-5 flex flex-col gap-4">
               <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
-                <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">PS1 বাটন</span>
-                <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">ডিফল্ট কীবোর্ড কি</span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">PS1 Button</span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Default Keyboard Key</span>
               </div>
 
               <div className="space-y-2 text-xs font-mono">
                 <div className="flex justify-between items-center py-1 border-b border-zinc-800/50">
-                  <span className="text-zinc-300">D-Pad (দিকসমূহ)</span>
-                  <span className="bg-zinc-800 px-2 py-0.5 rounded text-emerald-400 font-bold">Arrow Keys (↑ ↓ ← →)</span>
+                  <span className="text-zinc-300">D-Pad</span>
+                  <span className="bg-zinc-800 px-2 py-0.5 rounded text-indigo-400 font-bold">Arrow Keys (↑ ↓ ← →)</span>
                 </div>
                 <div className="flex justify-between items-center py-1 border-b border-zinc-800/50">
                   <span className="text-zinc-300">Cross (✕) / Square (□)</span>
-                  <span className="bg-zinc-800 px-2 py-0.5 rounded text-emerald-400 font-bold">Z / A</span>
+                  <span className="bg-zinc-800 px-2 py-0.5 rounded text-indigo-400 font-bold">Z / A</span>
                 </div>
                 <div className="flex justify-between items-center py-1 border-b border-zinc-800/50">
                   <span className="text-zinc-300">Circle (○) / Triangle (△)</span>
@@ -546,29 +547,29 @@ export default function PS1Emulator() {
                 </div>
                 <div className="flex justify-between items-center py-1 border-b border-zinc-800/50">
                   <span className="text-zinc-300">L1 / L2</span>
-                  <span className="bg-zinc-800 px-2 py-0.5 rounded text-indigo-400 font-bold">Q / E</span>
+                  <span className="bg-zinc-800 px-2 py-0.5 rounded text-indigo-300 font-bold">Q / E</span>
                 </div>
                 <div className="flex justify-between items-center py-1">
                   <span className="text-zinc-300">R1 / R2</span>
-                  <span className="bg-zinc-800 px-2 py-0.5 rounded text-indigo-400 font-bold">W / R</span>
+                  <span className="bg-zinc-800 px-2 py-0.5 rounded text-indigo-300 font-bold">W / R</span>
                 </div>
               </div>
 
               <button
                 onClick={() => setIsSettingsOpen(true)}
-                className="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-xs transition-all shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-all shadow-md shadow-indigo-600/20 flex items-center justify-center gap-2 cursor-pointer"
               >
                 <SlidersHorizontal className="h-4 w-4" />
-                কীবোর্ড বা গেমপ্যাড কি কাস্টমাইজ করুন
+                Customize Keyboard / Gamepad Keys
               </button>
 
-              <div className="mt-1 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-emerald-300">
+              <div className="mt-1 p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-[11px] text-indigo-300">
                 <p className="font-semibold mb-1 flex items-center gap-1">
-                  <Sparkles className="h-3 w-3 text-emerald-400" />
-                  USB/Bluetooth গেমপ্যাড সাপোর্ট
+                  <Sparkles className="h-3 w-3 text-indigo-400" />
+                  USB / Bluetooth Gamepad Support
                 </p>
-                <p className="text-emerald-300/80 leading-relaxed">
-                  যেকোনো PS4/PS5 বা Xbox কন্ট্রোলার লাগিয়ে সরাসরি খেলা যাবে। কন্ট্রোলারের বাটনগুলো স্বয়ংক্রিয়ভাবে ম্যাপ হয়ে যাবে।
+                <p className="text-indigo-300/80 leading-relaxed">
+                  Plug in any PS4, PS5, Xbox, or generic USB/Bluetooth controller for instant plug-and-play gaming.
                 </p>
               </div>
             </div>
@@ -578,26 +579,26 @@ export default function PS1Emulator() {
           {activeTab === "info" && (
             <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-5 flex flex-col gap-4 text-xs">
               <h3 className="font-semibold text-sm text-zinc-100 flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                PS1 ইঞ্জিন ও কর্মক্ষমতা
+                <CheckCircle2 className="h-4 w-4 text-indigo-400" />
+                PS1 Engine & Performance
               </h3>
               <ul className="space-y-3 text-zinc-300">
                 <li className="flex items-start gap-2">
-                  <span className="text-emerald-400 font-bold">•</span>
+                  <span className="text-indigo-400 font-bold">•</span>
                   <div>
-                    <strong className="text-white">রক-সলিড ৬০ FPS:</strong> PlayStation 1 আর্কিটেকচার ব্রাউজার WebAssembly-তে ১০০% অপটিমাইজড গতিতে এবং ০% ল্যাগে চলে।
+                    <strong className="text-white">Rock-Solid 60 FPS:</strong> PlayStation 1 PCSX ReARMed core compiled to WebAssembly runs at full speed with minimal overhead.
                   </div>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-emerald-400 font-bold">•</span>
+                  <span className="text-indigo-400 font-bold">•</span>
                   <div>
-                    <strong className="text-white">লেজেন্ডারি রেসিং গেমসমূহ:</strong> Gran Turismo 1 & 2, Need for Speed 3, Crash Team Racing (CTR), Tekken 3 ফুল স্পিডে উপভোগ করুন।
+                    <strong className="text-white">Legendary Titles:</strong> Gran Turismo 1 & 2, Tekken 3, Crash Team Racing, Metal Gear Solid run flawlessly at 60 FPS.
                   </div>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-emerald-400 font-bold">•</span>
+                  <span className="text-indigo-400 font-bold">•</span>
                   <div>
-                    <strong className="text-white">সেভ স্টেট সাপোর্ট:</strong> গেমের যেকোনো পয়েন্টে ইন্সট্যান্ট সেভ ও লোড করার সুবিধা রয়েছে।
+                    <strong className="text-white">Save State Support:</strong> Instantly save and load states directly from the emulator interface.
                   </div>
                 </li>
               </ul>
@@ -607,16 +608,16 @@ export default function PS1Emulator() {
           {/* Tab 3: Compatibility Notice */}
           {activeTab === "compatibility" && (
             <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-5 flex flex-col gap-3 text-xs">
-              <div className="flex items-center gap-2 text-emerald-400 font-semibold text-sm">
+              <div className="flex items-center gap-2 text-indigo-400 font-semibold text-sm">
                 <Zap className="h-4 w-4" />
-                ১০০% ফুল-স্পিড কমপ্যাটিবিলিটি
+                100% Full-Speed Compatibility
               </div>
               <p className="text-zinc-300 leading-relaxed">
-                PS1-এর প্রায় ৯৯.৯% গেম এই ব্রাউজার ইঞ্জিনে ৬০ FPS-এ সম্পূর্ণ বাগ-মুক্তভাবে রান করে। M1 ম্যাকবুকে কোনো ফ্রেম ড্রপ ছাড়াই স্মুথ গেমপ্লে পাওয়া যায়।
+                Over 99.9% of PlayStation 1 titles run at smooth 60 FPS in modern browsers without frame drops.
               </p>
               <div className="p-3 bg-zinc-800/50 rounded-xl border border-zinc-700/50 text-zinc-400">
-                <strong className="text-zinc-200 block mb-1">প্রস্তাবিত টপ PS1 গেম:</strong>
-                • Tekken 3, Gran Turismo 2, Resident Evil 2 & 3, Castlevania: Symphony of the Night, Crash Bandicoot, Pepsiman ইত্যাদি।
+                <strong className="text-zinc-200 block mb-1">Recommended Top PS1 Games:</strong>
+                Tekken 3, Gran Turismo 2, Resident Evil 2 & 3, Castlevania: Symphony of the Night, Crash Bandicoot, Pepsiman, and more.
               </div>
             </div>
           )}

@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   Play
 } from "lucide-react";
+import { AuthNavButton } from "@/components/AuthNavButton";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -24,213 +25,217 @@ export const metadata: Metadata = {
 
 const gamingEngines = [
   {
-    id: "ps2",
-    title: "PlayStation 2",
-    subtitle: "Play! WebAssembly HLE",
-    badge: "PS2 Core",
-    badgeColor: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-    gradient: "from-blue-600 via-indigo-600 to-cyan-500",
-    glowColor: "group-hover:shadow-blue-500/20",
+    id: "arcade",
+    title: "Arcade & Neo Geo",
+    subtitle: "CPS-1.5 / FinalBurn / MAME",
+    badge: "Full 60 FPS",
+    badgeColor: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
+    gradient: "from-indigo-600 via-indigo-500 to-violet-500",
+    glowColor: "group-hover:shadow-indigo-500/20",
     icon: Gamepad2,
-    iconColor: "text-blue-400",
-    description: "আপনার কম্পিউটারের .ISO বা .BIN ফাইল সিলেক্ট করে ব্রাউজারেই PS2 গেম খেলুন। কোনো BIOS ফাইল ছাড়াই স্বয়ংক্রিয়ভাবে গেম বুট হয়।",
-    fps: "১০-৩০ FPS (HLE)",
-    features: ["লোকাল ISO স্ট্রিমিং", "জিরো সার্ভার আপলোড", "কিবোর্ড ও USB গেমপ্যাড সাপোর্ট", "4:3 সেন্টারিং মোড"],
-    href: "/ps2",
-    btnText: "PS2 এমুলেটর চালু করুন",
-    btnGradient: "from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500",
+    iconColor: "text-indigo-400",
+    description: "Enjoy legendary arcade classics like Cadillacs & Dinosaurs (Mustapha), The King of Fighters (KOF '98/2002), and Metal Slug at full 60 FPS.",
+    fps: "Full 60 FPS (Ultra Smooth)",
+    features: ["Cadillacs & Dinosaurs (Mustapha)", "King of Fighters (KOF) Support", "USB Arcade Joystick / Gamepad", "Instant Browser Memory Cache"],
+    href: "/arcade",
+    btnText: "Launch Arcade & Neo Geo",
+    btnGradient: "from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 shadow-indigo-500/25",
   },
   {
     id: "ps1",
     title: "PlayStation 1",
     subtitle: "PCSX ReARMed Engine",
     badge: "Rock Solid 60 FPS",
-    badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-    gradient: "from-emerald-600 via-teal-600 to-cyan-500",
-    glowColor: "group-hover:shadow-emerald-500/20",
+    badgeColor: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
+    gradient: "from-indigo-600 via-indigo-500 to-blue-500",
+    glowColor: "group-hover:shadow-indigo-500/20",
     icon: Zap,
-    iconColor: "text-emerald-400",
-    description: "Tekken 3, Gran Turismo 2, NFS 3-এর মতো সর্বকালের সেরা PS1 ক্লাসিকগুলো M1 ম্যাকবুকে ০% ল্যাগে ফুল ৬০ FPS-এ উপভোগ করুন।",
-    fps: "ফুল ৬০ FPS (Full Speed)",
-    features: ["রক-সলিড ৬০ FPS পারফরম্যান্স", "সেভ স্টেট ও লোড সাপোর্ট", "PS1 কন্টিনুয়াস সাউন্ড", ".ISO, .BIN, .CUE সাপোর্ট"],
+    iconColor: "text-indigo-400",
+    description: "Play all-time PS1 classics like Tekken 3, Gran Turismo 2, and NFS 3 with zero lag and rock-solid 60 FPS right in your browser.",
+    fps: "Full 60 FPS (Full Speed)",
+    features: ["Rock-Solid 60 FPS Performance", "Save & Load State Support", "PS1 Continuous Audio", ".ISO, .BIN, .CUE Support"],
     href: "/ps1",
-    btnText: "PS1 এমুলেটর চালু করুন (60 FPS)",
-    btnGradient: "from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500",
-  },
-  {
-    id: "arcade",
-    title: "Arcade & Neo Geo",
-    subtitle: "CPS-1.5 / FinalBurn / MAME",
-    badge: "Full 60 FPS",
-    badgeColor: "bg-orange-500/10 text-orange-400 border-orange-500/20",
-    gradient: "from-red-600 via-orange-600 to-amber-500",
-    glowColor: "group-hover:shadow-orange-500/20",
-    icon: Gamepad2,
-    iconColor: "text-orange-400",
-    description: "মুস্তাফা (Cadillacs & Dinosaurs), King of Fighters (KOF '98/2002), Metal Slug-এর মতো কিংবদন্তি আর্কেড গেম ৬০ FPS-এ উপভোগ করুন।",
-    fps: "ফুল ৬০ FPS (100% মসৃণ)",
-    features: ["ক্যাডিল্যাক্স অ্যান্ড ডাইনোসরস (Mustapha)", "King of Fighters (KOF) সাপোর্ট", "ইউএসবি আর্কেড জয়স্টিক / গেমপ্যাড", "লোকাল .zip রম লোডার"],
-    href: "/arcade",
-    btnText: "আর্কেড ও নিও জিও চালু করুন",
-    btnGradient: "from-red-600 via-orange-600 to-amber-600 hover:from-red-500 hover:to-amber-500",
+    btnText: "Launch PS1 Player (60 FPS)",
+    btnGradient: "from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 shadow-indigo-500/25",
   },
   {
     id: "sourceports",
     title: "GTA Vice City (reVC)",
     subtitle: "Native C++ Source Port",
     badge: "Native 60+ FPS",
-    badgeColor: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-    gradient: "from-amber-500 via-orange-500 to-rose-500",
-    glowColor: "group-hover:shadow-orange-500/20",
+    badgeColor: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
+    gradient: "from-indigo-600 via-violet-600 to-indigo-500",
+    glowColor: "group-hover:shadow-indigo-500/20",
     icon: Flame,
-    iconColor: "text-amber-400",
-    description: "কোনো এমুলেটর ছাড়াই সরাসরি ব্রাউজারে রিভার্স-ইঞ্জিনিয়ার্ড নেটিভ GTA Vice City খেলুন। WebGL ও WebAssembly দিয়ে ৬০+ FPS মাখনের মতো স্মুথ।",
-    fps: "৬০+ FPS (Native C++)",
-    features: ["জিরো এমুলেশন ওভারহেড", "অরিজিনাল পিসি 3D গ্রাফিক্স", "মাউস ও কীবোর্ড ডিরেক্ট ইনপুট", "ইনস্ট্যান্ট বুট"],
+    iconColor: "text-indigo-400",
+    description: "Experience reverse-engineered native GTA Vice City with zero emulator overhead. Rendered via WebGL and WebAssembly at 60+ FPS.",
+    fps: "60+ FPS (Native C++)",
+    features: ["Zero Emulation Overhead", "Original PC 3D Graphics", "Direct Keyboard & Mouse Input", "Instant Game Boot"],
     href: "/sourceports",
-    btnText: "GTA Vice City খেলুন (60+ FPS)",
-    btnGradient: "from-amber-600 via-orange-600 to-rose-600 hover:from-amber-500 hover:to-rose-500",
+    btnText: "Play GTA Vice City (60+ FPS)",
+    btnGradient: "from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 shadow-indigo-500/25",
+  },
+  {
+    id: "ps2",
+    title: "PlayStation 2",
+    subtitle: "Play! WebAssembly HLE",
+    badge: "PS2 Core",
+    badgeColor: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
+    gradient: "from-indigo-600 via-blue-600 to-indigo-400",
+    glowColor: "group-hover:shadow-indigo-500/20",
+    icon: Gamepad2,
+    iconColor: "text-indigo-400",
+    description: "Play PS2 games right in your browser by selecting your .ISO or .BIN files. No BIOS dump needed—boots automatically via HLE.",
+    fps: "10-30 FPS (HLE)",
+    features: ["Local ISO File Streaming", "Zero Server Upload", "Keyboard & USB Gamepad Support", "4:3 Centering Display"],
+    href: "/ps2",
+    btnText: "Launch PS2 Player",
+    btnGradient: "from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 shadow-indigo-500/25",
   },
 ];
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-zinc-900 to-black text-slate-100 flex flex-col font-sans select-none">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans select-none">
       {/* Top Header */}
-      <header className="border-b border-zinc-800/80 bg-zinc-950/70 backdrop-blur-md px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+      <header className="border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-50">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-400 p-0.5 flex items-center justify-center shadow-lg shadow-blue-500/20">
-            <div className="h-full w-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-              <Gamepad2 className="h-5 w-5 text-cyan-400" />
-            </div>
+          <div className="h-10 w-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 p-0.5 flex items-center justify-center shadow-lg shadow-indigo-500/10">
+            <Gamepad2 className="h-5 w-5 text-indigo-400" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-blue-400 via-indigo-200 to-cyan-400 bg-clip-text text-transparent">
-              PlaySphere Web Hub
+            <h1 className="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
+              <span>PlaySphere Web Hub</span>
+              <span className="hidden sm:inline-block text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                PRO
+              </span>
             </h1>
-            <p className="text-xs text-zinc-400">Next-Gen Client-Side Browser Gaming Platform</p>
+            <p className="text-[11px] sm:text-xs text-zinc-400">Client-Side WebAssembly Gaming Platform</p>
           </div>
         </div>
 
-        {/* Console Switcher Navigation */}
-        <nav className="hidden md:flex items-center gap-2 bg-zinc-900/90 border border-zinc-800 p-1.5 rounded-2xl text-xs">
+        {/* Console Switcher Navigation (Fully Mobile Scrollable) */}
+        <nav className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1 sm:pb-0 text-xs">
           <Link
             href="/"
-            className="px-3.5 py-1.5 rounded-xl bg-zinc-800 text-white font-semibold shadow"
+            className="px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-sm shrink-0"
           >
-            হোম
+            Home
           </Link>
           <Link
             href="/arcade"
-            className="px-3.5 py-1.5 rounded-xl text-zinc-400 hover:text-white transition-colors"
+            className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
           >
             Arcade & Neo-Geo
           </Link>
           <Link
             href="/ps1"
-            className="px-3.5 py-1.5 rounded-xl text-zinc-400 hover:text-white transition-colors"
+            className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
           >
             PS1 (60 FPS)
           </Link>
           <Link
-            href="/ps2"
-            className="px-3.5 py-1.5 rounded-xl text-zinc-400 hover:text-white transition-colors"
+            href="/sourceports"
+            className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
           >
-            PS2 (Play!)
+            reVC (GTA 60+)
           </Link>
           <Link
-            href="/sourceports"
-            className="px-3.5 py-1.5 rounded-xl text-zinc-400 hover:text-white transition-colors"
+            href="/ps2"
+            className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
           >
-            reVC (GTA 60+ FPS)
+            PS2
           </Link>
+          <Link
+            href="/admin"
+            className="px-3 py-1.5 rounded-xl text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 transition-colors font-medium shrink-0"
+          >
+            Admin
+          </Link>
+          <AuthNavButton />
         </nav>
       </header>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-12 pb-8 px-6 text-center max-w-4xl mx-auto flex flex-col items-center">
+      <section className="relative overflow-hidden pt-8 sm:pt-14 pb-8 px-4 sm:px-6 text-center max-w-4xl mx-auto flex flex-col items-center">
         {/* Glow ambient */}
-        <div className="absolute w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none -top-20 -left-20" />
-        <div className="absolute w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none -bottom-20 -right-20" />
+        <div className="absolute w-80 sm:w-96 h-80 sm:h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none -top-20 -left-20" />
+        <div className="absolute w-80 sm:w-96 h-80 sm:h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none -bottom-20 -right-20" />
 
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold uppercase tracking-wider mb-4">
-          <Sparkles className="h-3.5 w-3.5 text-cyan-400" />
-          অল-ইন-ওয়ান ব্রাউজার গেমিং হাব
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold uppercase tracking-wider mb-4">
+          <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
+          All-in-One In-Browser Gaming Hub
         </div>
 
-        <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-4 leading-tight">
-          কোনো ইন্সটলেশন ছাড়াই সরাসরি ব্রাউজারে খেলুন
+        <h2 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-4 leading-tight">
+          Play Retro & Console Games Directly in Your Browser
         </h2>
 
-        <p className="text-sm sm:text-base text-zinc-400 max-w-2xl leading-relaxed mb-8">
-          আপনার কম্পিউটারে থাকা যেকোনো PlayStation বা রেট্রো গেমের ফাইল ব্রাউজারে ড্রপ করুন। কোনো ফাইল সার্ভারে আপলোড হবে না; WebAssembly-র মাধ্যমে সরাসরি আপনার পিসির শক্তিতে গেম চলবে।
+        <p className="text-xs sm:text-sm md:text-base text-zinc-400 max-w-2xl leading-relaxed mb-6 sm:mb-8 px-2">
+          Drop any retro or console game files right into your browser. Nothing uploads to any server; everything runs 100% locally on your machine powered by WebAssembly.
         </p>
 
-        {/* Feature quick stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-3xl">
-          <div className="p-3 rounded-2xl bg-zinc-900/60 border border-zinc-800/80">
-            <div className="text-lg font-bold text-white">১০০% লোকাল</div>
-            <div className="text-xs text-zinc-400">জিরো সার্ভার আপলোড</div>
+        {/* Feature quick stats (Responsive 2 cols on mobile, 4 on desktop) */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 w-full max-w-3xl">
+          <div className="p-3 rounded-2xl bg-zinc-900/60 border border-zinc-800">
+            <div className="text-base sm:text-lg font-bold text-white">100% Local</div>
+            <div className="text-[11px] sm:text-xs text-zinc-400">Zero Server Upload</div>
           </div>
-          <div className="p-3 rounded-2xl bg-zinc-900/60 border border-zinc-800/80">
-            <div className="text-lg font-bold text-emerald-400">৬০+ FPS</div>
-            <div className="text-xs text-zinc-400">PS1 ও Native reVC</div>
+          <div className="p-3 rounded-2xl bg-zinc-900/60 border border-zinc-800">
+            <div className="text-base sm:text-lg font-bold text-indigo-400">60+ FPS</div>
+            <div className="text-[11px] sm:text-xs text-zinc-400">Arcade, PS1 & reVC</div>
           </div>
-          <div className="p-3 rounded-2xl bg-zinc-900/60 border border-zinc-800/80">
-            <div className="text-lg font-bold text-cyan-400">গেমপ্যাড</div>
-            <div className="text-xs text-zinc-400">PS4, PS5 ও Xbox রেডি</div>
+          <div className="p-3 rounded-2xl bg-zinc-900/60 border border-zinc-800">
+            <div className="text-base sm:text-lg font-bold text-indigo-400">Gamepad</div>
+            <div className="text-[11px] sm:text-xs text-zinc-400">PS4, PS5 & Xbox Ready</div>
           </div>
-          <div className="p-3 rounded-2xl bg-zinc-900/60 border border-zinc-800/80">
-            <div className="text-lg font-bold text-indigo-400">নো BIOS</div>
-            <div className="text-xs text-zinc-400">অটো বুট সিস্টেম</div>
+          <div className="p-3 rounded-2xl bg-zinc-900/60 border border-zinc-800">
+            <div className="text-base sm:text-lg font-bold text-indigo-400">Offline Cache</div>
+            <div className="text-[11px] sm:text-xs text-zinc-400">IndexedDB Memory</div>
           </div>
         </div>
       </section>
 
       {/* Main Console Hub Grid */}
-      <main className="max-w-7xl w-full mx-auto px-6 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h3 className="text-xl font-bold text-white">গেমিং প্ল্যাটফর্ম ও ইঞ্জিন নির্বাচন করুন</h3>
-            <p className="text-xs text-zinc-400">আপনার পছন্দের কনসোলটিতে ক্লিক করে যেকোনো গেম চালু করুন</p>
-          </div>
+      <main className="max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        <div className="mb-6">
+          <h3 className="text-lg sm:text-xl font-bold text-white">Select a Gaming Platform & Core</h3>
+          <p className="text-xs text-zinc-400">Click any console engine below to start playing your favorite games</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {gamingEngines.map((engine) => {
             const Icon = engine.icon;
             return (
               <div
                 key={engine.id}
-                className="group relative bg-zinc-950/80 border border-zinc-800/90 hover:border-zinc-700 rounded-3xl p-6 flex flex-col justify-between transition-all duration-300 shadow-xl hover:shadow-2xl flex-1 hover:-translate-y-1"
+                className="group relative bg-zinc-950 border border-zinc-800/90 hover:border-indigo-500/50 rounded-3xl p-5 sm:p-6 flex flex-col justify-between transition-all duration-300 shadow-lg hover:shadow-indigo-500/10 hover:-translate-y-1"
               >
                 <div>
                   {/* Top Bar of card */}
-                  <div className="flex items-center justify-between mb-5">
-                    <div className={`h-12 w-12 rounded-2xl bg-gradient-to-tr ${engine.gradient} p-0.5 flex items-center justify-center shadow-lg`}>
-                      <div className="h-full w-full bg-slate-950 rounded-[14px] flex items-center justify-center">
-                        <Icon className={`h-6 w-6 ${engine.iconColor}`} />
-                      </div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="h-11 w-11 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center shadow-md">
+                      <Icon className="h-5 w-5 text-indigo-400" />
                     </div>
-                    <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full border ${engine.badgeColor}`}>
+                    <span className="text-[10px] sm:text-[11px] font-semibold px-2.5 py-1 rounded-full border bg-indigo-500/10 text-indigo-300 border-indigo-500/20">
                       {engine.badge}
                     </span>
                   </div>
 
-                  <h4 className="text-xl font-bold text-white group-hover:text-cyan-300 transition-colors">
+                  <h4 className="text-lg font-bold text-white group-hover:text-indigo-400 transition-colors">
                     {engine.title}
                   </h4>
-                  <div className="text-xs font-medium text-zinc-400 mb-3">{engine.subtitle}</div>
+                  <div className="text-xs font-medium text-zinc-400 mb-2.5">{engine.subtitle}</div>
 
-                  <p className="text-xs text-zinc-400 leading-relaxed mb-6">
+                  <p className="text-xs text-zinc-400 leading-relaxed mb-5 line-clamp-3">
                     {engine.description}
                   </p>
 
                   {/* Highlights */}
                   <div className="space-y-2 mb-6">
                     {engine.features.map((feat, i) => (
-                      <div key={i} className="flex items-center gap-2 text-xs text-zinc-300">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+                      <div key={i} className="flex items-center gap-2 text-[11px] sm:text-xs text-zinc-300">
+                        <CheckCircle2 className="h-3.5 w-3.5 text-indigo-400 shrink-0" />
                         <span>{feat}</span>
                       </div>
                     ))}
@@ -240,7 +245,7 @@ export default function HomePage() {
                 {/* Bottom Action button */}
                 <Link
                   href={engine.href}
-                  className={`w-full py-3 px-4 rounded-2xl bg-gradient-to-r ${engine.btnGradient} text-white font-bold text-xs tracking-wide shadow-lg flex items-center justify-center gap-2 transition-all group-hover:scale-[1.02] cursor-pointer`}
+                  className="w-full py-3 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs tracking-wide shadow-md shadow-indigo-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
                 >
                   <span>{engine.btnText}</span>
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -252,8 +257,8 @@ export default function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="mt-auto border-t border-zinc-900 px-6 py-6 text-center text-xs text-zinc-500">
-        PlaySphere Gaming Hub • Powered by Next.js, WebAssembly & WebGL. Built for modern high-performance browser gaming.
+      <footer className="mt-auto border-t border-zinc-900 px-4 sm:px-6 py-5 text-center text-xs text-zinc-500">
+        PlaySphere Gaming Hub • Powered by Next.js, WebAssembly & WebGL. Built with Tailwind CSS Indigo Design System.
       </footer>
     </div>
   );
