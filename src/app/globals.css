@@ -24,3 +24,31 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Proper PS2 4:3 scaling that preserves aspect ratio in both windowed and fullscreen modes */
+canvas#outputCanvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+  margin: auto;
+}
+
+/* When the wrapper or canvas goes fullscreen, fit within the screen dimensions without zooming */
+:fullscreen canvas#outputCanvas,
+:-webkit-full-screen canvas#outputCanvas,
+.fullscreen-active canvas#outputCanvas {
+  width: auto !important;
+  height: 100vh !important;
+  max-width: calc(100vh * (4 / 3)) !important;
+  max-height: 100vh !important;
+  aspect-ratio: 4 / 3 !important;
+  object-fit: contain !important;
+  margin: auto !important;
+}
+
+
+
