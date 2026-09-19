@@ -13,6 +13,7 @@ export interface CustomGame {
   romUrl: string;
   romKey?: string;
   directLink?: string;
+  embedUrl?: string;
   imageUrl?: string;
   imageKey?: string;
   addedAt?: number;
@@ -56,6 +57,7 @@ export async function getStoredGames(filterCategory?: string): Promise<CustomGam
         romUrl: g.romUrl,
         romKey: g.romKey || undefined,
         directLink: g.directLink || undefined,
+        embedUrl: g.embedUrl || undefined,
         imageUrl: g.imageUrl || undefined,
         imageKey: g.imageKey || undefined,
         addedAt: g.addedAt ? new Date(g.addedAt).getTime() : undefined,
@@ -86,6 +88,7 @@ export async function saveStoredGame(game: CustomGame): Promise<void> {
         romUrl: game.romUrl,
         romKey: game.romKey || null,
         directLink: game.directLink || null,
+        embedUrl: game.embedUrl || null,
         imageUrl: game.imageUrl || null,
         imageKey: game.imageKey || null,
         addedAt: game.addedAt ? new Date(game.addedAt) : new Date(),
@@ -100,6 +103,7 @@ export async function saveStoredGame(game: CustomGame): Promise<void> {
         romUrl: game.romUrl,
         romKey: game.romKey || null,
         directLink: game.directLink || null,
+        embedUrl: game.embedUrl || null,
         imageUrl: game.imageUrl || null,
         imageKey: game.imageKey || null,
       },

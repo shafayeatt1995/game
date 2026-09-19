@@ -11,6 +11,7 @@ model Game {
   imageUrl    String?
   imageKey    String?
   directLink  String?
+  embedUrl    String?
   addedAt     DateTime @default(now())
 
   createdAt   DateTime @default(now())

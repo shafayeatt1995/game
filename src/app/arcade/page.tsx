@@ -1,16 +1,16 @@
 import { Suspense } from "react";
-import ArcadeEmulator from "@/components/ArcadeEmulator";
+import ArcadeCatalog from "@/components/ArcadeCatalog";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Arcade & Neo Geo 60 FPS - Cadillacs and Dinosaurs & King of Fighters",
-  description: "Play classic Capcom CPS-1.5 Cadillacs and Dinosaurs (Mustapha) and SNK Neo Geo King of Fighters at full 60 FPS in your browser.",
+  title: "Arcade & Neo Geo Games Library - Play 60 FPS in Browser",
+  description: "Browse and play classic Capcom CPS-1.5, CPS-2 and SNK Neo Geo games at 60 FPS with USB joystick support and offline storage.",
 };
 
 export default function ArcadePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Arcade Hub...</div>}>
-      <ArcadeEmulator />
+    <Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Arcade Games...</div>}>
+      <ArcadeCatalog />
     </Suspense>
   );
 }
