@@ -7,16 +7,17 @@ import {
   Maximize2, 
   Minimize2, 
   Play, 
-  Pause,
-  RotateCcw,
+  Pause, 
+  RotateCcw, 
   Info, 
   Cpu, 
   Keyboard, 
   CheckCircle2, 
-  AlertTriangle,
-  FolderOpen,
-  Sparkles,
-  Volume2
+  AlertTriangle, 
+  FolderOpen, 
+  Sparkles, 
+  SlidersHorizontal,
+  Settings2
 } from "lucide-react";
 import { 
   getPlayModule, 
@@ -25,6 +26,8 @@ import {
   resumeEmulation, 
   PlayModuleInstance 
 } from "@/lib/PlayManager";
+import ControlsSettingsModal from "@/components/ControlsSettingsModal";
+import { getInputManager } from "@/lib/InputManager";
 
 export default function PS2Emulator() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -34,8 +37,26 @@ export default function PS2Emulator() {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const [showFps, setShowFps] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("playsphere_show_fps");
+      return saved !== null ? saved === "true" : true;
+    }
+    return true;
+  });
+  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+  const [inputConfig, setInputConfig] = useState(() => getInputManager().getConfig());
   const [activeTab, setActiveTab] = useState<"controls" | "info" | "compatibility">("controls");
   const [isDragOver, setIsDragOver] = useState<boolean>(false);
+
+  const toggleShowFps = (val: boolean) => {
+    setShowFps(val);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("playsphere_show_fps", String(val));
+    }
+  };
+
+
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const screenWrapperRef = useRef<HTMLDivElement | null>(null);
@@ -106,6 +127,7 @@ export default function PS2Emulator() {
       setStatusText(`চলছে: ${selectedFile.name}`);
 
       if (canvasRef.current) {
+        getInputManager().setCanvas(canvasRef.current);
         canvasRef.current.focus();
       }
     } catch (err: any) {
@@ -174,18 +196,31 @@ export default function PS2Emulator() {
 
         {/* Header Right Stats & Controls */}
         <div className="flex items-center gap-2 sm:gap-3">
+          {/* FPS Checkmark Toggle */}
+          <label className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all text-xs text-zinc-300 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={showFps}
+              onChange={(e) => toggleShowFps(e.target.checked)}
+              className="h-4 w-4 rounded bg-zinc-950 border-zinc-700 text-blue-600 focus:ring-0 focus:ring-offset-0 cursor-pointer accent-blue-600"
+            />
+            <span className="font-medium">FPS শো করুন</span>
+          </label>
+
           {isPlaying && (
             <>
-              <div className="flex items-center gap-2 bg-zinc-900/90 border border-zinc-800 px-3 py-1.5 rounded-xl text-xs font-mono">
-                <span className={`inline-block w-2 h-2 rounded-full ${isPaused ? "bg-amber-400" : "bg-emerald-400 animate-pulse"}`}></span>
-                <span className="text-zinc-400">{isPaused ? "PAUSED" : "FPS:"}</span>
-                {!isPaused && <span className="text-emerald-400 font-bold">{fps}</span>}
-              </div>
+              {showFps && !isFullscreen && (
+                <div className="flex items-center gap-2 bg-zinc-900/90 border border-zinc-800 px-3 py-1.5 rounded-xl text-xs font-mono">
+                  <span className={`inline-block w-2 h-2 rounded-full ${isPaused ? "bg-amber-400" : "bg-emerald-400 animate-pulse"}`}></span>
+                  <span className="text-zinc-400">{isPaused ? "PAUSED" : "FPS:"}</span>
+                  {!isPaused && <span className="text-emerald-400 font-bold">{fps}</span>}
+                </div>
+              )}
 
               {/* Pause / Play Button */}
               <button
                 onClick={togglePause}
-                className={`p-2 rounded-xl border transition-all flex items-center gap-1.5 text-xs font-medium ${
+                className={`p-2 rounded-xl border transition-all flex items-center gap-1.5 text-xs font-medium cursor-pointer ${
                   isPaused 
                     ? "bg-emerald-600/20 border-emerald-500/40 text-emerald-300 hover:bg-emerald-600/30" 
                     : "bg-zinc-900 border-zinc-800 hover:border-zinc-700 text-zinc-300 hover:text-white"
@@ -199,7 +234,7 @@ export default function PS2Emulator() {
               {/* Restart Button */}
               <button
                 onClick={restartEmulator}
-                className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-zinc-300 hover:text-rose-400 transition-all flex items-center gap-1.5 text-xs font-medium"
+                className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-zinc-300 hover:text-rose-400 transition-all flex items-center gap-1.5 text-xs font-medium cursor-pointer"
                 title="রিস্টার্ট করুন"
               >
                 <RotateCcw className="h-4 w-4" />
@@ -208,10 +243,23 @@ export default function PS2Emulator() {
             </>
           )}
 
+          {/* Controls Settings Button */}
+          <button
+            onClick={() => setIsSettingsOpen(true)}
+            className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-blue-500/50 text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 text-xs font-medium shadow-sm cursor-pointer"
+            title="কন্ট্রোলার / কিবোর্ড সেটিংস"
+          >
+            <SlidersHorizontal className="h-4 w-4 text-blue-400" />
+            <span className="hidden sm:inline">কন্ট্রোল সেটিংস</span>
+            <span className="text-[10px] px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400 uppercase font-mono">
+              {inputConfig.inputMode === "gamepad" ? "গেমপ্যাড" : "কিবোর্ড"}
+            </span>
+          </button>
+
           {/* Fullscreen Button */}
           <button
             onClick={toggleFullscreen}
-            className="p-2 rounded-xl bg-gradient-to-r from-zinc-900 to-zinc-800 border border-zinc-700/80 hover:border-zinc-600 text-zinc-200 hover:text-white transition-all flex items-center gap-1.5 text-xs font-medium shadow-sm"
+            className="p-2 rounded-xl bg-gradient-to-r from-zinc-900 to-zinc-800 border border-zinc-700/80 hover:border-zinc-600 text-zinc-200 hover:text-white transition-all flex items-center gap-1.5 text-xs font-medium shadow-sm cursor-pointer"
             title="ফুলস্ক্রিন টগল"
           >
             {isFullscreen ? <Minimize2 className="h-4 w-4 text-cyan-400" /> : <Maximize2 className="h-4 w-4 text-cyan-400" />}
@@ -219,6 +267,7 @@ export default function PS2Emulator() {
           </button>
         </div>
       </header>
+
 
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -260,19 +309,32 @@ export default function PS2Emulator() {
               </div>
             )}
 
-            {/* In-Screen Floating Quick Action Bar (Visible in Fullscreen or during game) */}
+            {/* In-Game Always-On-Top FPS Display (Always visible in top-right corner, even in fullscreen) */}
+            {isPlaying && showFps && (
+              <div className="absolute top-4 right-4 z-50 pointer-events-none select-none flex items-center gap-2 bg-black/75 backdrop-blur-md border border-zinc-700/80 px-3 py-1.5 rounded-xl text-xs font-mono shadow-2xl">
+                <span className={`inline-block w-2 h-2 rounded-full ${isPaused ? "bg-amber-400" : "bg-emerald-400 animate-pulse"}`}></span>
+                <span className="text-zinc-400 font-bold">{isPaused ? "PAUSED" : "FPS:"}</span>
+                {!isPaused && (
+                  <span className={`font-extrabold ${fps >= 45 ? "text-emerald-400" : fps >= 25 ? "text-amber-400" : "text-rose-400"}`}>
+                    {fps}
+                  </span>
+                )}
+              </div>
+            )}
+
+            {/* In-Screen Floating Quick Action Bar (Visible on hover in Fullscreen or during game) */}
             {isPlaying && (
-              <div className="absolute top-3 right-3 opacity-0 hover:opacity-100 transition-opacity z-40 bg-zinc-950/80 backdrop-blur-md border border-zinc-800 rounded-xl px-2 py-1 flex items-center gap-1 shadow-lg">
+              <div className="absolute top-4 left-4 opacity-0 hover:opacity-100 transition-opacity z-40 bg-zinc-950/80 backdrop-blur-md border border-zinc-800 rounded-xl px-2 py-1 flex items-center gap-1 shadow-lg">
                 <button
                   onClick={togglePause}
-                  className="p-1.5 rounded-lg hover:bg-zinc-800 text-zinc-300 hover:text-white transition-colors"
+                  className="p-1.5 rounded-lg hover:bg-zinc-800 text-zinc-300 hover:text-white transition-colors cursor-pointer"
                   title={isPaused ? "Resume" : "Pause"}
                 >
                   {isPaused ? <Play className="h-4 w-4 fill-current text-emerald-400" /> : <Pause className="h-4 w-4" />}
                 </button>
                 <button
                   onClick={toggleFullscreen}
-                  className="p-1.5 rounded-lg hover:bg-zinc-800 text-zinc-300 hover:text-white transition-colors"
+                  className="p-1.5 rounded-lg hover:bg-zinc-800 text-zinc-300 hover:text-white transition-colors cursor-pointer"
                   title="Fullscreen"
                 >
                   {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
@@ -480,7 +542,15 @@ export default function PS2Emulator() {
                 </div>
               </div>
 
-              <div className="mt-2 p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-[11px] text-blue-300">
+              <button
+                onClick={() => setIsSettingsOpen(true)}
+                className="w-full py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold text-xs transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <SlidersHorizontal className="h-4 w-4" />
+                কীবোর্ড বা গেমপ্যাড কি কাস্টমাইজ করুন
+              </button>
+
+              <div className="mt-1 p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-[11px] text-blue-300">
                 <p className="font-semibold mb-1 flex items-center gap-1">
                   <Sparkles className="h-3 w-3 text-cyan-400" />
                   USB/Bluetooth গেমপ্যাড সাপোর্ট
@@ -542,6 +612,15 @@ export default function PS2Emulator() {
         </div>
       </main>
 
+      {/* Controller Configuration Modal */}
+      <ControlsSettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => {
+          setIsSettingsOpen(false);
+          setInputConfig(getInputManager().getConfig());
+        }}
+      />
+
       {/* Footer */}
       <footer className="border-t border-zinc-900 px-6 py-4 text-center text-xs text-zinc-500">
         Powered by Next.js & Play! (jpd002/Play-) WebAssembly Core. Built for Client-side PS2 Gaming.
@@ -549,3 +628,4 @@ export default function PS2Emulator() {
     </div>
   );
 }
+

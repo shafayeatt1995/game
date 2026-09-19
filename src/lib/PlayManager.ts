@@ -40,13 +40,36 @@ export async function getPlayModule(canvas?: HTMLCanvasElement | null): Promise<
 
   initPromise = (async () => {
     const PlayConstructor = await loadPlayScript();
+    const canvasElement = canvas || (document.getElementById("outputCanvas") as HTMLCanvasElement | null);
+
+    // Intercept getContext on canvas to force M1 High-Performance Metal GPU pipeline & lowest latency
+    if (canvasElement && !(canvasElement as any)._perfPatched) {
+      (canvasElement as any)._perfPatched = true;
+      const originalGetContext = canvasElement.getContext.bind(canvasElement);
+      canvasElement.getContext = function (contextType: string, contextAttributes?: any): any {
+        const enhancedAttrs = {
+          ...(contextAttributes || {}),
+          powerPreference: "high-performance",
+          desynchronized: true,
+          antialias: false, // Disabling antialias frees massive fillrate overhead on M1 GPU
+          preserveDrawingBuffer: false,
+        };
+        return originalGetContext(contextType, enhancedAttrs);
+      };
+    }
 
     const moduleOverrides: any = {
-      canvas: canvas || document.getElementById("outputCanvas"),
+      canvas: canvasElement,
       locateFile: function (path: string) {
         return "/" + path;
       },
       mainScriptUrlOrBlob: "/Play.js",
+      contextAttributes: {
+        powerPreference: "high-performance",
+        desynchronized: true,
+        antialias: false,
+        preserveDrawingBuffer: false,
+      },
       print: function (text: string) {
         console.log("[Play! core]:", text);
       },
