@@ -161,7 +161,10 @@ export default function ArcadeEmulator({ activeSlug }: ArcadeEmulatorProps = {})
     try {
       setStatusText("Initializing Arcade Engine (FB Alpha / MAME) & ROM...");
       const blobUrl = URL.createObjectURL(blob);
-      const resolvedGameName = gameId === "dino" ? "dino" : (gameId || "dino");
+      let resolvedGameName = gameId || "dino";
+      if (!resolvedGameName.toLowerCase().endsWith(".zip")) {
+        resolvedGameName = `${resolvedGameName}.zip`;
+      }
 
       window.EJS_player = "#arcade-game-container";
       window.EJS_core = "arcade";
