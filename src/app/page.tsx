@@ -1,3 +1,4 @@
+import { SiteHeader } from "@/components/SiteHeader";
 import Link from "next/link";
 import { 
   Gamepad2, 
@@ -70,51 +71,7 @@ const gamingEngines = [
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans select-none">
-      {/* Top Header */}
-      <header className="border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-50">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 p-0.5 flex items-center justify-center shadow-lg shadow-indigo-500/10">
-            <Gamepad2 className="h-5 w-5 text-indigo-400" />
-          </div>
-          <div>
-            <h1 className="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
-              <span>Retro Gaming</span>
-              <span className="hidden sm:inline-block text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                Hub
-              </span>
-            </h1>
-            <p className="text-[11px] sm:text-xs text-zinc-400">Client-Side WebAssembly Gaming Platform</p>
-          </div>
-        </div>
-
-        {/* Clean Menu: Home, Arcade, PS1, PS2 (Admin & Login removed) */}
-        <nav className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1 sm:pb-0 text-xs font-medium">
-          <Link
-            href="/"
-            className="px-3.5 py-1.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-sm shrink-0"
-          >
-            Home
-          </Link>
-          <Link
-            href="/arcade"
-            className="px-3.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
-          >
-            Arcade
-          </Link>
-          <Link
-            href="/ps1"
-            className="px-3.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
-          >
-            PS1
-          </Link>
-          <Link
-            href="/ps2"
-            className="px-3.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
-          >
-            PS2
-          </Link>
-        </nav>
-      </header>
+      <SiteHeader title="Retro Gaming" subtitle="Client-Side WebAssembly Gaming Platform" badge="Hub" />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-8 sm:pt-14 pb-8 px-4 sm:px-6 text-center max-w-4xl mx-auto flex flex-col items-center">

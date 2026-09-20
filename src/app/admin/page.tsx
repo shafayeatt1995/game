@@ -1,3 +1,4 @@
+import { AdminHeader } from "@/components/AdminHeader";
 import React from "react";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
@@ -144,36 +145,19 @@ export default async function AdminStatisticsPage() {
   return (
     <div className="flex-1 flex flex-col font-sans select-none">
       {/* Top Header */}
-      <header className="border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md px-4 sm:px-8 py-3.5 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-30">
-        <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
-            <Layers className="h-4 w-4" />
-          </div>
-          <div>
-            <h1 className="text-base sm:text-lg font-bold tracking-tight text-white flex items-center gap-2">
-              <span>Platform Statistics & Overview</span>
-              <span className="hidden sm:inline-block text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                Live Data
-              </span>
-            </h1>
-            <p className="text-[11px] sm:text-xs text-zinc-400">
-              Real-time MongoDB Atlas statistics and UploadThing storage analytics
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
+      <AdminHeader
+        title="Platform Statistics & Overview"
+        subtitle="Real-time MongoDB Atlas statistics and UploadThing storage analytics"
+        badge="Live Data"
+        actionButton={
           <Link
             href="/admin/arcad"
-            className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5"
+            className="px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
           >
-            <span>+ Import ROM</span>
+            <span>+ Import Game</span>
           </Link>
-          <div className="hidden lg:block">
-            <AuthNavButton />
-          </div>
-        </div>
-      </header>
+        }
+      />
 
       {/* Main Container */}
       <main className="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-8 flex flex-col gap-8">

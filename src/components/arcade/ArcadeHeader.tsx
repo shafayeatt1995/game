@@ -1,5 +1,7 @@
 "use client";
 
+import { SiteHeader } from "@/components/SiteHeader";
+
 import React from "react";
 import Link from "next/link";
 import { ChevronLeft, Sword, SlidersHorizontal, Minimize2, Maximize2 } from "lucide-react";
@@ -27,52 +29,12 @@ export default function ArcadeHeader({
   onToggleFullscreen,
 }: ArcadeHeaderProps) {
   return (
-    <header className="border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-50">
-      <div className="flex items-center gap-3">
-        <Link
-          href="/arcade"
-          className="h-10 px-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-indigo-500/50 text-zinc-300 hover:text-white flex items-center gap-1.5 text-xs font-semibold transition-all group"
-          title="Back to Arcade Games List"
-        >
-          <ChevronLeft className="h-4 w-4 text-indigo-400 group-hover:-translate-x-0.5 transition-transform" />
-          <span className="hidden sm:inline">All Games</span>
-        </Link>
-        <div className="h-10 w-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 p-0.5 flex items-center justify-center shadow-lg shadow-indigo-500/10">
-          <Sword className="h-5 w-5 text-indigo-400" />
-        </div>
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
-              <span>{selectedGame ? selectedGame.title : "Retro Gaming Arcade"}</span>
-            </h1>
-            <span className="hidden sm:inline-flex text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse"></span>
-              60 FPS
-            </span>
-          </div>
-          <p className="text-[11px] sm:text-xs text-zinc-400">
-            {selectedGame ? `${selectedGame.shortTitle} • ${selectedGame.category}` : "Arcade & Neo-Geo Web Player"}
-          </p>
-        </div>
-      </div>
-
-      {/* Navigation - Clean menu: Home, Arcade, PS1, PS2 */}
-      <nav className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1 sm:pb-0 text-xs font-medium">
-        <Link href="/" className="px-3.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0">
-          Home
-        </Link>
-        <Link href="/arcade" className="px-3.5 py-1.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-sm shrink-0">
-          Arcade
-        </Link>
-        <Link href="/ps1" className="px-3.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0">
-          PS1
-        </Link>
-        <Link href="/ps2" className="px-3.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0">
-          PS2
-        </Link>
-      </nav>
-
-      {/* Right Controls */}
+    <SiteHeader
+      title={selectedGame ? selectedGame.title : "Retro Gaming Arcade"}
+      subtitle={selectedGame ? `${selectedGame.shortTitle} • ${selectedGame.category}` : "Arcade & Neo-Geo Web Player"}
+      badge="60 FPS"
+      rightElements={
+        
       <div className="flex items-center gap-2">
         <label className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all text-xs text-zinc-300 cursor-pointer select-none">
           <input
@@ -109,6 +71,7 @@ export default function ArcadeHeader({
           <span className="hidden md:inline">{isFullscreen ? "Exit Fullscreen" : "Fullscreen"}</span>
         </button>
       </div>
-    </header>
+      }
+    />
   );
 }

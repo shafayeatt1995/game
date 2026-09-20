@@ -1,5 +1,7 @@
 "use client";
 
+import { SiteHeader } from "@/components/SiteHeader";
+
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -132,49 +134,7 @@ export default function ArcadeCatalog() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans select-none">
       {/* Top Header */}
-      <header className="border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-50">
-        <div className="flex items-center gap-3">
-          <Link href="/" className="h-10 w-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 p-0.5 flex items-center justify-center shadow-lg shadow-indigo-500/10 hover:border-indigo-400 transition-colors">
-            <Gamepad2 className="h-5 w-5 text-indigo-400" />
-          </Link>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
-                <span>Arcade & Neo-Geo Hub</span>
-              </h1>
-              <span className="hidden sm:inline-flex text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse"></span>
-                60 FPS WebAssembly
-              </span>
-            </div>
-            <p className="text-[11px] sm:text-xs text-zinc-400">
-              Browse all {gamesList.length} classic arcade titles. Click any card to launch and play.
-            </p>
-          </div>
-        </div>
-
-        {/* Navigation Bar */}
-        <nav className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1 sm:pb-0 text-xs">
-          <Link href="/" className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0">
-            Home
-          </Link>
-          <Link href="/arcade" className="px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-sm shrink-0">
-            Arcade & Neo-Geo
-          </Link>
-          <Link href="/ps1" className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0">
-            PS1 (60 FPS)
-          </Link>
-          <Link href="/ps2" className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0">
-            PS2 (Play!)
-          </Link>
-          <Link href="/sourceports" className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0">
-            reVC (GTA 60+)
-          </Link>
-          <Link href="/admin/arcad" className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-indigo-500/30 text-indigo-300 hover:text-indigo-200 hover:bg-indigo-500/10 transition-colors shrink-0">
-            Admin
-          </Link>
-        </nav>
-      </header>
+      <SiteHeader title="Retro Gaming Arcade" subtitle="Browse all classic arcade titles. Click any card to launch and play." badge="60 FPS" />
 
       {/* Hero Section */}
       <section className="relative border-b border-zinc-800/60 bg-gradient-to-b from-indigo-950/20 via-zinc-950 to-zinc-950 py-10 sm:py-14 px-4 sm:px-6">

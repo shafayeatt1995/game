@@ -1,5 +1,7 @@
 "use client";
 
+import { AdminHeader } from "@/components/AdminHeader";
+
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { 
@@ -229,27 +231,11 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-black text-zinc-100 flex flex-col font-sans">
       {/* Top Header */}
-      <header className="border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md sticky top-0 z-40 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link
-            href="/arcade"
-            className="flex items-center gap-2 text-xs font-semibold text-zinc-400 hover:text-white transition-colors bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-xl cursor-pointer"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            Back to Arcade
-          </Link>
-          <div className="h-4 w-[1px] bg-zinc-800"></div>
-          <div>
-            <h1 className="font-extrabold text-white text-base sm:text-lg tracking-tight flex items-center gap-2">
-              <span>Admin Arcade Management</span>
-              <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-bold">
-                Cloud Sync
-              </span>
-            </h1>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
+      <AdminHeader
+        title="Arcade Game Management"
+        subtitle="Import, configure, and manage arcade and retro ROMs stored in cloud"
+        badge="Cloud Sync"
+        actionButton={
           <button
             onClick={openCreateModal}
             className="py-2 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition-all flex items-center gap-2 cursor-pointer"
@@ -257,9 +243,8 @@ export default function AdminPage() {
             <Plus className="h-4 w-4" />
             <span>Add New Game</span>
           </button>
-          <AuthNavButton />
-        </div>
-      </header>
+        }
+      />
 
       {/* Main Content */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-8 space-y-6">

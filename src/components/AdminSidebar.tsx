@@ -5,18 +5,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
   Gamepad2, 
-  Disc, 
-  Flame, 
-  Zap, 
   Sliders, 
   Menu, 
   X, 
-  Home, 
   Shield, 
-  Database, 
-  LogOut,
-  Layers,
-  ChevronRight
+  Layers, 
+  ChevronRight, 
+  Home
 } from "lucide-react";
 import { AuthNavButton } from "@/components/AuthNavButton";
 
@@ -29,32 +24,11 @@ const adminNavItems = [
     desc: "Platform stats & storage analytics",
   },
   {
-    name: "Arcade & Neo-Geo",
+    name: "Arcade Games",
     href: "/admin/arcad",
     icon: Gamepad2,
     badge: "Active",
     desc: "Import & Manage Arcade ROMs",
-  },
-  {
-    name: "PlayStation 1 (PS1)",
-    href: "/admin/ps1",
-    icon: Zap,
-    badge: "Soon",
-    desc: "PS1 ISO / BIN Management",
-  },
-  {
-    name: "GTA Vice City (reVC)",
-    href: "/admin/sourceports",
-    icon: Flame,
-    badge: "Soon",
-    desc: "Native Port Game Assets",
-  },
-  {
-    name: "PlayStation 2 (PS2)",
-    href: "/admin/ps2",
-    icon: Disc,
-    badge: "Soon",
-    desc: "PS2 ISO Streaming",
   },
 ];
 
@@ -78,7 +52,7 @@ export function AdminSidebar() {
             <div className="h-7 w-7 rounded-lg bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center">
               <Shield className="h-4 w-4 text-indigo-400" />
             </div>
-            <span className="text-sm font-bold text-white">Admin Dashboard</span>
+            <span className="text-sm font-bold text-white">Retro Gaming Admin</span>
           </div>
         </div>
         <AuthNavButton />
@@ -110,7 +84,7 @@ export function AdminSidebar() {
             </div>
             <div>
               <div className="text-base font-bold tracking-tight text-white flex items-center gap-1.5">
-                <span>PlaySphere</span>
+                <span>Retro Gaming</span>
                 <span className="text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
                   Admin
                 </span>
@@ -121,7 +95,7 @@ export function AdminSidebar() {
 
           <button
             onClick={() => setIsMobileOpen(false)}
-            className="lg:hidden p-1.5 rounded-lg text-zinc-400 hover:text-white"
+            className="lg:hidden p-1.5 rounded-lg text-zinc-400 hover:text-white cursor-pointer"
           >
             <X className="h-5 w-5" />
           </button>
@@ -193,7 +167,6 @@ export function AdminSidebar() {
           {/* Quick Hub Links */}
           <div>
             <div className="text-[10px] uppercase font-bold text-zinc-500 tracking-wider px-3 mb-2 flex items-center gap-1.5">
-              <Database className="h-3 w-3" />
               <span>Quick Links</span>
             </div>
             <div className="space-y-1 text-xs">

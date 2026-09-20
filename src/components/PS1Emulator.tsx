@@ -1,5 +1,7 @@
 "use client";
 
+import { SiteHeader } from "@/components/SiteHeader";
+
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { 
@@ -179,59 +181,13 @@ export default function PS1Emulator() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans select-none">
       {/* Top Header */}
-      <header className="border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-50">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 p-0.5 flex items-center justify-center shadow-lg shadow-indigo-500/10">
-            <Gamepad2 className="h-5 w-5 text-indigo-400" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
-                <span>Retro Gaming</span>
-                <span className="text-indigo-400">PS1</span>
-              </h1>
-              <span className="hidden sm:inline-flex text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse"></span>
-                60 FPS Core
-              </span>
-            </div>
-            <p className="text-[11px] sm:text-xs text-zinc-400">
-              {selectedFile ? selectedFile.name : "PlayStation 1 PCSX WebAssembly Emulator"}
-            </p>
-          </div>
-        </div>
-
-        {/* Console Switcher Tabs - Clean menu */}
-        <nav className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1 sm:pb-0 text-xs font-medium">
-          <Link
-            href="/"
-            className="px-3.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
-          >
-            Home
-          </Link>
-          <Link
-            href="/arcade"
-            className="px-3.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
-          >
-            Arcade
-          </Link>
-          <Link
-            href="/ps1"
-            className="px-3.5 py-1.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-sm shrink-0"
-          >
-            PS1
-          </Link>
-          <Link
-            href="/ps2"
-            className="px-3.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
-          >
-            PS2
-          </Link>
-        </nav>
-
-        {/* Header Right Stats & Controls */}
+      <SiteHeader
+        title="Retro Gaming PS1"
+        subtitle={selectedFile ? selectedFile.name : "PlayStation 1 PCSX WebAssembly Emulator"}
+        badge="60 FPS Core"
+        rightElements={
+          
         <div className="flex items-center gap-2">
-          {/* FPS Checkmark Toggle */}
           <label className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all text-xs text-zinc-300 cursor-pointer select-none">
             <input
               type="checkbox"
@@ -242,66 +198,34 @@ export default function PS1Emulator() {
             <span className="font-medium text-[11px] sm:text-xs">FPS</span>
           </label>
 
-          {isPlaying && (
-            <>
-              {showFps && !isFullscreen && (
-                <div className="flex items-center gap-2 bg-zinc-900/90 border border-zinc-800 px-3 py-1.5 rounded-xl text-xs font-mono">
-                  <span className={`inline-block w-2 h-2 rounded-full ${isPaused ? "bg-amber-400" : "bg-emerald-400 animate-pulse"}`}></span>
-                  <span className="text-zinc-400">{isPaused ? "PAUSED" : "FPS:"}</span>
-                  {!isPaused && <span className="text-emerald-400 font-bold">{fps}</span>}
-                </div>
-              )}
-
-              {/* Pause / Play Button */}
-              <button
-                onClick={togglePause}
-                className={`p-2 rounded-xl border transition-all flex items-center gap-1.5 text-xs font-medium cursor-pointer ${
-                  isPaused 
-                    ? "bg-indigo-600/20 border-indigo-500/40 text-indigo-300 hover:bg-indigo-600/30" 
-                    : "bg-zinc-900 border-zinc-800 hover:border-zinc-700 text-zinc-300 hover:text-white"
-                }`}
-                title={isPaused ? "Resume Game" : "Pause Game"}
-              >
-                {isPaused ? <Play className="h-4 w-4 fill-current text-indigo-400" /> : <Pause className="h-4 w-4" />}
-                <span className="hidden md:inline">{isPaused ? "Resume" : "Pause"}</span>
-              </button>
-
-              {/* Restart Button */}
-              <button
-                onClick={restartEmulator}
-                className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-zinc-300 hover:text-rose-400 transition-all flex items-center gap-1.5 text-xs font-medium cursor-pointer"
-                title="Restart"
-              >
-                <RotateCcw className="h-4 w-4" />
-                <span className="hidden md:inline">Restart</span>
-              </button>
-            </>
+          {isPlaying && showFps && !isFullscreen && (
+            <div className="flex items-center gap-1.5 bg-zinc-900/90 border border-zinc-800 px-2.5 py-1.5 rounded-xl text-xs font-mono">
+              <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span className="text-zinc-400">FPS:</span>
+              <span className="text-emerald-400 font-bold">{fps}</span>
+            </div>
           )}
 
-          {/* Controls Settings Button */}
           <button
             onClick={() => setIsSettingsOpen(true)}
-            className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-indigo-500/50 text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 text-xs font-medium shadow-sm cursor-pointer"
-            title="Controller / Keyboard Settings"
+            className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-indigo-500/50 text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 text-xs font-medium cursor-pointer"
+            title="Controller Remapping"
           >
             <SlidersHorizontal className="h-4 w-4 text-indigo-400" />
-            <span className="hidden sm:inline">Controls</span>
-            <span className="text-[10px] px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400 uppercase font-mono">
-              {inputConfig.inputMode === "gamepad" ? "Gamepad" : "Keyboard"}
-            </span>
+            <span className="hidden md:inline">Controls</span>
           </button>
 
-          {/* Fullscreen Button */}
           <button
             onClick={toggleFullscreen}
-            className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-indigo-500/50 text-zinc-200 hover:text-white transition-all flex items-center gap-1.5 text-xs font-medium shadow-sm cursor-pointer"
-            title="Toggle Fullscreen"
+            className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-indigo-500/50 text-zinc-200 hover:text-white transition-all flex items-center gap-1.5 text-xs font-medium cursor-pointer"
+            title="Fullscreen Toggle"
           >
             {isFullscreen ? <Minimize2 className="h-4 w-4 text-indigo-400" /> : <Maximize2 className="h-4 w-4 text-indigo-400" />}
-            <span className="hidden sm:inline">{isFullscreen ? "Exit Fullscreen" : "Fullscreen"}</span>
+            <span className="hidden md:inline">{isFullscreen ? "Exit Fullscreen" : "Fullscreen"}</span>
           </button>
         </div>
-      </header>
+        }
+      />
 
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
