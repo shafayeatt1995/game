@@ -15,7 +15,9 @@
   },
   "dependencies": {
     "@prisma/client": "^6.4.1",
+    "@types/adm-zip": "^0.5.8",
     "@uploadthing/react": "^7.3.3",
+    "adm-zip": "^0.6.1",
     "bcryptjs": "^3.0.3",
     "canvas-confetti": "^1.9.4",
     "lucide-react": "^1.47.0",

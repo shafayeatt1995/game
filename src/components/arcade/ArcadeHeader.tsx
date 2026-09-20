@@ -43,7 +43,7 @@ export default function ArcadeHeader({
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
-              <span>{selectedGame ? selectedGame.title : "PlaySphere Arcade"}</span>
+              <span>{selectedGame ? selectedGame.title : "Retro Gaming Arcade"}</span>
             </h1>
             <span className="hidden sm:inline-flex text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse"></span>
@@ -56,25 +56,19 @@ export default function ArcadeHeader({
         </div>
       </div>
 
-      {/* Navigation - Mobile scrollable chip bar */}
-      <nav className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1 sm:pb-0 text-xs">
-        <Link href="/" className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0">
+      {/* Navigation - Clean menu: Home, Arcade, PS1, PS2 */}
+      <nav className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1 sm:pb-0 text-xs font-medium">
+        <Link href="/" className="px-3.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0">
           Home
         </Link>
-        <Link href="/arcade" className="px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-sm shrink-0">
-          Arcade & Neo-Geo
+        <Link href="/arcade" className="px-3.5 py-1.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-sm shrink-0">
+          Arcade
         </Link>
-        <Link href="/ps1" className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0">
-          PS1 (60 FPS)
+        <Link href="/ps1" className="px-3.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0">
+          PS1
         </Link>
-        <Link href="/ps2" className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0">
-          PS2 (Play!)
-        </Link>
-        <Link href="/sourceports" className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0">
-          reVC (GTA 60+)
-        </Link>
-        <Link href="/admin" className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-indigo-500/30 text-indigo-300 hover:text-indigo-200 hover:bg-indigo-500/10 transition-colors shrink-0">
-          Admin
+        <Link href="/ps2" className="px-3.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0">
+          PS2
         </Link>
       </nav>
 

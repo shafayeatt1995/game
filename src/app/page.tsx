@@ -1,26 +1,16 @@
 import Link from "next/link";
 import { 
   Gamepad2, 
-  Disc, 
-  Flame, 
   Zap, 
-  Cpu, 
   Sparkles, 
   ArrowRight, 
-  Monitor, 
-  HardDrive, 
-  SlidersHorizontal,
-  ChevronRight,
-  ShieldCheck,
   CheckCircle2,
-  Play
 } from "lucide-react";
-import { AuthNavButton } from "@/components/AuthNavButton";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "PlaySphere Web Hub - Retro PlayStation & Source Port Hub",
-  description: "Next-generation in-browser gaming hub. Play PS2, PS1 at 60 FPS, and native GTA Vice City with local file streaming.",
+  title: "Retro Gaming - Arcade, PS1 & PS2 Web Hub",
+  description: "Play your favorite Arcade, Neo-Geo, PS1, and PS2 games directly in your browser with 60 FPS WebAssembly emulation.",
 };
 
 const gamingEngines = [
@@ -30,16 +20,16 @@ const gamingEngines = [
     subtitle: "CPS-1.5 / FinalBurn / MAME",
     badge: "Full 60 FPS",
     badgeColor: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
-    gradient: "from-indigo-600 via-indigo-500 to-violet-500",
-    glowColor: "group-hover:shadow-indigo-500/20",
     icon: Gamepad2,
-    iconColor: "text-indigo-400",
-    description: "Enjoy legendary arcade classics like Cadillacs & Dinosaurs (Mustapha), The King of Fighters (KOF '98/2002), and Metal Slug at full 60 FPS.",
-    fps: "Full 60 FPS (Ultra Smooth)",
-    features: ["Cadillacs & Dinosaurs (Mustapha)", "King of Fighters (KOF) Support", "USB Arcade Joystick / Gamepad", "Instant Browser Memory Cache"],
+    description: "Enjoy legendary arcade classics like Cadillacs & Dinosaurs (Mustapha), The King of Fighters (KOF '98/2002), and Metal Slug at full 60 FPS with cheats and controller support.",
+    features: [
+      "Cadillacs & Dinosaurs & Punisher", 
+      "King of Fighters (KOF) & Metal Slug", 
+      "Built-in Cheat Codes & Auto-Save", 
+      "Instant Browser Memory Caching"
+    ],
     href: "/arcade",
-    btnText: "Launch Arcade & Neo Geo",
-    btnGradient: "from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 shadow-indigo-500/25",
+    btnText: "Launch Arcade",
   },
   {
     id: "ps1",
@@ -47,33 +37,16 @@ const gamingEngines = [
     subtitle: "PCSX ReARMed Engine",
     badge: "Rock Solid 60 FPS",
     badgeColor: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
-    gradient: "from-indigo-600 via-indigo-500 to-blue-500",
-    glowColor: "group-hover:shadow-indigo-500/20",
     icon: Zap,
-    iconColor: "text-indigo-400",
-    description: "Play all-time PS1 classics like Tekken 3, Gran Turismo 2, and NFS 3 with zero lag and rock-solid 60 FPS right in your browser.",
-    fps: "Full 60 FPS (Full Speed)",
-    features: ["Rock-Solid 60 FPS Performance", "Save & Load State Support", "PS1 Continuous Audio", ".ISO, .BIN, .CUE Support"],
+    description: "Play all-time PS1 classics like Tekken 3, Gran Turismo 2, and Crash Bandicoot with zero lag and rock-solid 60 FPS right in your browser.",
+    features: [
+      "Rock-Solid 60 FPS Performance", 
+      "Save & Load State Support", 
+      "High-Definition Audio & Visuals", 
+      ".ISO, .BIN, .CUE Streaming"
+    ],
     href: "/ps1",
-    btnText: "Launch PS1 Player (60 FPS)",
-    btnGradient: "from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 shadow-indigo-500/25",
-  },
-  {
-    id: "sourceports",
-    title: "GTA Vice City (reVC)",
-    subtitle: "Native C++ Source Port",
-    badge: "Native 60+ FPS",
-    badgeColor: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
-    gradient: "from-indigo-600 via-violet-600 to-indigo-500",
-    glowColor: "group-hover:shadow-indigo-500/20",
-    icon: Flame,
-    iconColor: "text-indigo-400",
-    description: "Experience reverse-engineered native GTA Vice City with zero emulator overhead. Rendered via WebGL and WebAssembly at 60+ FPS.",
-    fps: "60+ FPS (Native C++)",
-    features: ["Zero Emulation Overhead", "Original PC 3D Graphics", "Direct Keyboard & Mouse Input", "Instant Game Boot"],
-    href: "/sourceports",
-    btnText: "Play GTA Vice City (60+ FPS)",
-    btnGradient: "from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 shadow-indigo-500/25",
+    btnText: "Launch PS1",
   },
   {
     id: "ps2",
@@ -81,16 +54,16 @@ const gamingEngines = [
     subtitle: "Play! WebAssembly HLE",
     badge: "PS2 Core",
     badgeColor: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
-    gradient: "from-indigo-600 via-blue-600 to-indigo-400",
-    glowColor: "group-hover:shadow-indigo-500/20",
     icon: Gamepad2,
-    iconColor: "text-indigo-400",
-    description: "Play PS2 games right in your browser by selecting your .ISO or .BIN files. No BIOS dump needed—boots automatically via HLE.",
-    fps: "10-30 FPS (HLE)",
-    features: ["Local ISO File Streaming", "Zero Server Upload", "Keyboard & USB Gamepad Support", "4:3 Centering Display"],
+    description: "Play PS2 games right in your browser by selecting your .ISO or .BIN files. No BIOS dump needed—boots automatically via high-level emulation.",
+    features: [
+      "Local ISO File Streaming", 
+      "Zero Server Upload (100% Private)", 
+      "Keyboard & USB Gamepad Support", 
+      "Hardware-Accelerated WebGL Rendering"
+    ],
     href: "/ps2",
-    btnText: "Launch PS2 Player",
-    btnGradient: "from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 shadow-indigo-500/25",
+    btnText: "Launch PS2",
   },
 ];
 
@@ -105,54 +78,41 @@ export default function HomePage() {
           </div>
           <div>
             <h1 className="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
-              <span>PlaySphere Web Hub</span>
+              <span>Retro Gaming</span>
               <span className="hidden sm:inline-block text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                PRO
+                Hub
               </span>
             </h1>
             <p className="text-[11px] sm:text-xs text-zinc-400">Client-Side WebAssembly Gaming Platform</p>
           </div>
         </div>
 
-        {/* Console Switcher Navigation (Fully Mobile Scrollable) */}
-        <nav className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1 sm:pb-0 text-xs">
+        {/* Clean Menu: Home, Arcade, PS1, PS2 (Admin & Login removed) */}
+        <nav className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1 sm:pb-0 text-xs font-medium">
           <Link
             href="/"
-            className="px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-sm shrink-0"
+            className="px-3.5 py-1.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-sm shrink-0"
           >
             Home
           </Link>
           <Link
             href="/arcade"
-            className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
+            className="px-3.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
           >
-            Arcade & Neo-Geo
+            Arcade
           </Link>
           <Link
             href="/ps1"
-            className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
+            className="px-3.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
           >
-            PS1 (60 FPS)
-          </Link>
-          <Link
-            href="/sourceports"
-            className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
-          >
-            reVC (GTA 60+)
+            PS1
           </Link>
           <Link
             href="/ps2"
-            className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
+            className="px-3.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
           >
             PS2
           </Link>
-          <Link
-            href="/admin"
-            className="px-3 py-1.5 rounded-xl text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 transition-colors font-medium shrink-0"
-          >
-            Admin
-          </Link>
-          <AuthNavButton />
         </nav>
       </header>
 
@@ -175,7 +135,7 @@ export default function HomePage() {
           Drop any retro or console game files right into your browser. Nothing uploads to any server; everything runs 100% locally on your machine powered by WebAssembly.
         </p>
 
-        {/* Feature quick stats (Responsive 2 cols on mobile, 4 on desktop) */}
+        {/* Feature quick stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 w-full max-w-3xl">
           <div className="p-3 rounded-2xl bg-zinc-900/60 border border-zinc-800">
             <div className="text-base sm:text-lg font-bold text-white">100% Local</div>
@@ -183,7 +143,7 @@ export default function HomePage() {
           </div>
           <div className="p-3 rounded-2xl bg-zinc-900/60 border border-zinc-800">
             <div className="text-base sm:text-lg font-bold text-indigo-400">60+ FPS</div>
-            <div className="text-[11px] sm:text-xs text-zinc-400">Arcade, PS1 & reVC</div>
+            <div className="text-[11px] sm:text-xs text-zinc-400">Arcade & PS1</div>
           </div>
           <div className="p-3 rounded-2xl bg-zinc-900/60 border border-zinc-800">
             <div className="text-base sm:text-lg font-bold text-indigo-400">Gamepad</div>
@@ -196,14 +156,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Main Console Hub Grid */}
-      <main className="max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
-        <div className="mb-6">
+      {/* Main Console Hub Grid: 3 Clean Cards (Arcade, PS1, PS2) */}
+      <main className="max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        <div className="mb-6 text-center sm:text-left">
           <h3 className="text-lg sm:text-xl font-bold text-white">Select a Gaming Platform & Core</h3>
           <p className="text-xs text-zinc-400">Click any console engine below to start playing your favorite games</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
           {gamingEngines.map((engine) => {
             const Icon = engine.icon;
             return (
@@ -258,7 +218,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="mt-auto border-t border-zinc-900 px-4 sm:px-6 py-5 text-center text-xs text-zinc-500">
-        PlaySphere Gaming Hub • Powered by Next.js, WebAssembly & WebGL. Built with Tailwind CSS Indigo Design System.
+        Retro Gaming Hub • Powered by Next.js, WebAssembly & WebGL.
       </footer>
     </div>
   );

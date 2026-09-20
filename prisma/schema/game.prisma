@@ -1,19 +1,46 @@
+// Game file asset types: "rom" | "parent_rom" | "bios" | "cheat" | "patch" | "state" | "other"
+type GameFile {
+  name        String            // e.g. "kof2002.zip", "neogeo.zip", "dino.cht"
+  url         String            // Direct download or Cloud URL (UploadThing / CDN)
+  fileKey     String?           // Storage key (for UploadThing deletion)
+  type        String  @default("rom") // "rom", "parent_rom", "bios", "cheat", "patch", "state"
+  sizeBytes   Int?              // File size in bytes
+  sizeText    String?           // e.g. "32.4 MB"
+}
+
+// In-game cheat structure for game-specific cheats
+type GameCheat {
+  desc        String            // e.g. "Infinite Energy P1"
+  code        String            // Memory address / cheat code e.g. "FF83B3+64"
+  enabled     Boolean @default(false)
+}
+
 model Game {
-  id          String   @id @map("_id")
-  slug        String?  @unique
+  id          String      @id @map("_id")
+  slug        String?     @unique
   title       String
   shortTitle  String
-  category    String   @default("arcade")
+  category    String      @default("arcade")
   sizeText    String
   desc        String
+
+  // Primary ROM info (kept for backwards compatibility & instant booting)
   romUrl      String
   romKey      String?
+
+  // Multiple files support: ROMs, BIOS, Parent ROMs, Cheats, Patches, Save States
+  files       GameFile[]
+
+  // Structured in-game cheats
+  cheats      GameCheat[]
+
+  // Media
   imageUrl    String?
   imageKey    String?
   directLink  String?
   embedUrl    String?
-  addedAt     DateTime @default(now())
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  addedAt     DateTime    @default(now())
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }

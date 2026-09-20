@@ -16,6 +16,8 @@ import ArcadeSidebarTabs from "@/components/arcade/ArcadeSidebarTabs";
 import ArcadeModals from "@/components/arcade/ArcadeModals";
 import ArcadeGameLibrary from "@/components/arcade/ArcadeGameLibrary";
 import ArcadeScreen from "./arcade/ArcadeScreen";
+import { getCheatsForGame } from "@/lib/arcadeCheats";
+import { ensureEmulatorJSSettings } from "@/lib/ArcadeSettingsStorage";
 
 declare global {
   interface Window {
@@ -28,6 +30,8 @@ declare global {
     EJS_DEBUG_XX?: boolean;
     EJS_onGameStart?: () => void;
     EJS_emulator?: any;
+    EJS_gameID?: number | string;
+    EJS_cheats?: [string, string][];
   }
 }
 
@@ -166,12 +170,17 @@ export default function ArcadeEmulator({ activeSlug }: ArcadeEmulatorProps = {})
         resolvedGameName = `${resolvedGameName}.zip`;
       }
 
+      const stableGameId = gameId || activeSlug || "dino";
+      ensureEmulatorJSSettings(stableGameId, resolvedGameName);
+
       window.EJS_player = "#arcade-game-container";
       window.EJS_core = "arcade";
       window.EJS_gameName = resolvedGameName;
       window.EJS_gameUrl = blobUrl;
       window.EJS_startOnLoaded = true;
       window.EJS_pathtodata = "https://cdn.emulatorjs.org/stable/data/";
+      window.EJS_gameID = stableGameId;
+      window.EJS_cheats = getCheatsForGame(stableGameId, activeSlug);
 
       window.EJS_onGameStart = () => {
         setIsPlaying(true);
@@ -399,7 +408,7 @@ export default function ArcadeEmulator({ activeSlug }: ArcadeEmulatorProps = {})
         </div>
 
         {/* Right 1 Col: Controls, Tech & Storage Information */}
-        <ArcadeSidebarTabs />
+        <ArcadeSidebarTabs gameId={selectedGame?.id || activeSlug} slug={selectedGame?.slug || activeSlug} />
       </main>
 
       {/* Confirmation and Import Modals */}

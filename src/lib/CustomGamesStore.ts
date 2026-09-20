@@ -2,6 +2,21 @@ import fs from "fs";
 import path from "path";
 import prisma from "./prisma";
 
+export interface CustomGameFile {
+  name: string;
+  url: string;
+  fileKey?: string | null;
+  type: "rom" | "parent_rom" | "bios" | "cheat" | "patch" | "state" | string;
+  sizeBytes?: number | null;
+  sizeText?: string | null;
+}
+
+export interface CustomGameCheat {
+  desc: string;
+  code: string;
+  enabled?: boolean;
+}
+
 export interface CustomGame {
   id: string;
   slug?: string;
@@ -12,6 +27,8 @@ export interface CustomGame {
   desc: string;
   romUrl: string;
   romKey?: string;
+  files?: CustomGameFile[];
+  cheats?: CustomGameCheat[];
   directLink?: string;
   embedUrl?: string;
   imageUrl?: string;
@@ -56,6 +73,8 @@ export async function getStoredGames(filterCategory?: string): Promise<CustomGam
         desc: g.desc,
         romUrl: g.romUrl,
         romKey: g.romKey || undefined,
+        files: (g.files as CustomGameFile[]) || [],
+        cheats: (g.cheats as CustomGameCheat[]) || [],
         directLink: g.directLink || undefined,
         embedUrl: g.embedUrl || undefined,
         imageUrl: g.imageUrl || undefined,
@@ -87,6 +106,8 @@ export async function saveStoredGame(game: CustomGame): Promise<void> {
         desc: game.desc,
         romUrl: game.romUrl,
         romKey: game.romKey || null,
+        files: game.files || [],
+        cheats: game.cheats || [],
         directLink: game.directLink || null,
         embedUrl: game.embedUrl || null,
         imageUrl: game.imageUrl || null,
@@ -102,6 +123,8 @@ export async function saveStoredGame(game: CustomGame): Promise<void> {
         desc: game.desc,
         romUrl: game.romUrl,
         romKey: game.romKey || null,
+        files: game.files || [],
+        cheats: game.cheats || [],
         directLink: game.directLink || null,
         embedUrl: game.embedUrl || null,
         imageUrl: game.imageUrl || null,

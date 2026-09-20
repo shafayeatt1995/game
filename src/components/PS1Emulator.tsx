@@ -187,7 +187,7 @@ export default function PS1Emulator() {
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
-                <span>PlaySphere</span>
+                <span>Retro Gaming</span>
                 <span className="text-indigo-400">PS1</span>
               </h1>
               <span className="hidden sm:inline-flex text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 items-center gap-1">
@@ -201,43 +201,31 @@ export default function PS1Emulator() {
           </div>
         </div>
 
-        {/* Console Switcher Tabs - Mobile scrollable */}
-        <nav className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1 sm:pb-0 text-xs">
+        {/* Console Switcher Tabs - Clean menu */}
+        <nav className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1 sm:pb-0 text-xs font-medium">
           <Link
             href="/"
-            className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
+            className="px-3.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
           >
             Home
           </Link>
           <Link
             href="/arcade"
-            className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
+            className="px-3.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
           >
-            Arcade & Neo-Geo
+            Arcade
           </Link>
           <Link
             href="/ps1"
-            className="px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-sm shrink-0"
+            className="px-3.5 py-1.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-sm shrink-0"
           >
-            PS1 (60 FPS)
+            PS1
           </Link>
           <Link
             href="/ps2"
-            className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
+            className="px-3.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
           >
-            PS2 (Play!)
-          </Link>
-          <Link
-            href="/sourceports"
-            className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 transition-colors shrink-0"
-          >
-            reVC (GTA 60+ FPS)
-          </Link>
-          <Link
-            href="/admin"
-            className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-indigo-500/30 text-indigo-300 hover:text-indigo-200 hover:bg-indigo-500/10 transition-colors shrink-0"
-          >
-            Admin
+            PS2
           </Link>
         </nav>
 

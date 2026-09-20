@@ -12,8 +12,8 @@ function LoginForm() {
   const callbackUrl = searchParams.get("callbackUrl") || "/admin/arcad";
 
 
-  const [email, setEmail] = useState("shafayetalanik@gmail.com");
-  const [password, setPassword] = useState("123456");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -117,15 +117,7 @@ function LoginForm() {
             </div>
           </div>
 
-          {/* Quick preset hint */}
-          <div className="p-3 bg-zinc-950/50 rounded-2xl border border-zinc-800/80 text-[11px] text-zinc-400 space-y-1">
-            <div className="font-semibold text-zinc-300 flex items-center gap-1.5">
-              <CheckCircle2 className="h-3 w-3 text-indigo-400" />
-              Database Configured User:
-            </div>
-            <div>Email: <span className="text-indigo-300 font-mono">shafayetalanik@gmail.com</span></div>
-            <div>Password: <span className="text-indigo-300 font-mono">123456</span></div>
-          </div>
+
 
           <button
             type="submit"
