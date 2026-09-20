@@ -244,7 +244,7 @@ export async function POST(request: NextRequest) {
       romKey: finalRomKey,
       imageUrl: finalImageUrl,
       imageKey: finalImageKey,
-      directLink: trimmedUrl.startsWith("http") ? trimmedUrl : undefined,
+      directLink: trimmedUrl.startsWith("http") && !trimmedUrl.includes("retrogames") ? trimmedUrl : undefined,
       addedAt: Date.now(),
     };
 

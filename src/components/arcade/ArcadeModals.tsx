@@ -105,7 +105,7 @@ export default function ArcadeModals({
                 <h3 className="font-bold text-white text-base">
                   Import New Game via Link
                 </h3>
-                <span className="text-xs text-zinc-400">Enter a RetroGames or direct .zip URL to auto-import</span>
+                <span className="text-xs text-zinc-400">Enter a direct ROM or .zip URL to auto-import</span>
               </div>
             </div>
 

@@ -67,8 +67,6 @@ export default function ArcadeEmulator({ activeSlug }: ArcadeEmulatorProps = {})
   );
   const [fps, setFps] = useState<number>(60);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [isIframePlaying, setIsIframePlaying] = useState<boolean>(false);
-  const [iframeUrl, setIframeUrl] = useState<string>("");
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [showFps, setShowFps] = useState<boolean>(() => {
     if (typeof window !== "undefined") {
@@ -125,19 +123,6 @@ export default function ArcadeEmulator({ activeSlug }: ArcadeEmulatorProps = {})
       setIsLoadingGames(false);
     }
   }, [activeSlug]);
-
-  const playViaOnlineStream = (game: RetroGamePreset) => {
-    setSelectedGame(game);
-    const streamEmbed = game.embedUrl || (game.id === "dino" ? "https://www.retrogames.cc/embed/8037-cadillacs-dinosaurs-930201-etc.html" : "");
-    if (streamEmbed) {
-      setIsIframePlaying(true);
-      setIsPlaying(true);
-      setIframeUrl(streamEmbed);
-      setStatusText(`Streaming: ${game.title} (Cloud 60 FPS Engine)`);
-    } else if (game.directLink) {
-      window.open(game.directLink, "_blank");
-    }
-  };
 
   useEffect(() => {
     refreshCachedList();
@@ -347,16 +332,6 @@ export default function ArcadeEmulator({ activeSlug }: ArcadeEmulatorProps = {})
     }
   };
 
-  const handleLocalFileSelect = (file: File) => {
-    const validExts = [".zip", ".7z", ".rom"];
-    const ext = file.name.substring(file.name.lastIndexOf(".")).toLowerCase();
-    if (!validExts.includes(ext)) {
-      alert("Please select a .zip file for Arcade or Neo Geo games (e.g. dino.zip, kof98.zip)");
-      return;
-    }
-    launchEmulatorWithBlob(file, file.name);
-  };
-
   const toggleFullscreen = () => {
     const container = containerRef.current;
     if (!container) return;
@@ -370,8 +345,6 @@ export default function ArcadeEmulator({ activeSlug }: ArcadeEmulatorProps = {})
 
   const handleStopGame = () => {
     setIsPlaying(false);
-    setIsIframePlaying(false);
-    setIframeUrl("");
     setStatusText("Stopped game. Ready to play.");
   };
 
@@ -397,8 +370,6 @@ export default function ArcadeEmulator({ activeSlug }: ArcadeEmulatorProps = {})
             containerRef={containerRef}
             selectedGame={selectedGame}
             isPlaying={isPlaying}
-            isIframePlaying={isIframePlaying}
-            iframeUrl={iframeUrl}
             isDownloading={isDownloading}
             downloadProgress={downloadProgress}
             isLoadingGames={isLoadingGames}
@@ -406,9 +377,7 @@ export default function ArcadeEmulator({ activeSlug }: ArcadeEmulatorProps = {})
             showFps={showFps}
             fps={fps}
             statusText={statusText}
-            onPlayViaOnlineStream={playViaOnlineStream}
             onSelectAndPlay={handleGameSelectAndPlay}
-            onLocalFileSelect={handleLocalFileSelect}
             onStopGame={handleStopGame}
             onToggleFullscreen={toggleFullscreen}
           />

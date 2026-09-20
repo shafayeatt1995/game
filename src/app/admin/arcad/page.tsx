@@ -44,34 +44,6 @@ export default function AdminPage() {
     }
   };
 
-  // Quick preset links user can test
-  const quickLinks = [
-    {
-      name: "Cadillacs & Dinosaurs (Mustapha)",
-      url: "https://www.retrogames.cc/arcade-games/cadillacs-dinosaurs-930201-etc.html"
-    },
-    {
-      name: "The King of Fighters '98 (KOF '98)",
-      url: "https://www.retrogames.cc/arcade-games/the-king-of-fighters-98-the-slugfest-kof-98-dream-match-never-ends.html"
-    },
-    {
-      name: "The King of Fighters 2002",
-      url: "https://www.retrogames.cc/arcade-games/the-king-of-fighters-2002-magic-plus-ii-bootleg.html"
-    },
-    {
-      name: "The Punisher (Capcom)",
-      url: "https://www.retrogames.cc/arcade-games/the-punisher-930422-etc.html"
-    },
-    {
-      name: "Metal Slug 3 (Neo Geo)",
-      url: "https://www.retrogames.cc/arcade-games/metal-slug-3-ngm-2560.html"
-    },
-    {
-      name: "Street Fighter II' Hyper Fighting",
-      url: "https://www.retrogames.cc/arcade-games/street-fighter-ii-hyper-fighting-turbo-921209-etc.html"
-    }
-  ];
-
   // Fetch all imported games from /api/import-rom
   const fetchImportedGames = async () => {
     try {
@@ -93,7 +65,7 @@ export default function AdminPage() {
   const handleImportSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!urlInput.trim()) {
-      setErrorMessage("Please enter a valid retrogames.cc or .zip URL");
+      setErrorMessage("Please enter a valid ROM archive or direct .zip URL");
       return;
     }
 
@@ -198,16 +170,16 @@ export default function AdminPage() {
               <Download className="h-6 w-6 animate-pulse" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-white">Automatic Game Importer from RetroGames.cc</h2>
-              <p className="text-xs text-zinc-400">Provide any RetroGames page URL—the server will automatically extract and download the ROM archive</p>
+              <h2 className="text-base sm:text-lg font-bold text-white">Automatic Game Importer</h2>
+              <p className="text-xs text-zinc-400">Provide any direct ROM archive or .zip URL—the server will automatically download and store the ROM</p>
             </div>
           </div>
 
           <form onSubmit={handleImportSubmit} className="flex flex-col gap-4">
             <div>
               <label className="text-xs font-bold text-zinc-300 mb-1.5 flex flex-wrap items-center justify-between gap-1">
-                <span>RetroGames.cc Page URL or Direct .zip Link:</span>
-                <span className="text-zinc-500 font-normal text-[11px]">e.g. https://www.retrogames.cc/arcade-games/...</span>
+                <span>Game ROM URL or Direct .zip Link:</span>
+                <span className="text-zinc-500 font-normal text-[11px]">e.g. https://domain.com/roms/game.zip</span>
               </label>
               <div className="relative">
                 <Globe className="h-4 w-4 absolute left-3.5 top-3.5 text-zinc-500" />
@@ -215,7 +187,7 @@ export default function AdminPage() {
                   type="text"
                   value={urlInput}
                   onChange={(e) => setUrlInput(e.target.value)}
-                  placeholder="https://www.retrogames.cc/arcade-games/cadillacs-dinosaurs-930201-etc.html"
+                  placeholder="https://domain.com/roms/game.zip"
                   className="w-full pl-10 pr-4 py-3 rounded-2xl bg-zinc-950 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 font-mono transition-all"
                   disabled={isLoading}
                 />
@@ -371,30 +343,6 @@ export default function AdminPage() {
               </button>
             </div>
           </form>
-
-          {/* Quick Links Suggestions */}
-          <div className="mt-8 pt-6 border-t border-zinc-800/80">
-            <span className="text-xs font-semibold text-zinc-400 block mb-3 flex items-center gap-1.5">
-              <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
-              Click any popular preset link to test:
-            </span>
-            <div className="flex flex-wrap gap-2">
-              {quickLinks.map((item, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => {
-                    setUrlInput(item.url);
-                    setTitleInput(item.name);
-                  }}
-                  className="px-3 py-1.5 rounded-xl bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 text-[11px] text-zinc-300 hover:text-white transition-all cursor-pointer flex items-center gap-1.5 hover:border-indigo-500/40"
-                >
-                  <span>{item.name}</span>
-                  <span className="text-indigo-400">↳</span>
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
 
         {/* Imported Games Table / Library Management */}
